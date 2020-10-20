@@ -49,12 +49,6 @@ heruntergeladen werden.
     TRAIN_LABEL_PATH = "data/train_labels.csv"
     TRAIN_PATH = "data/train/"
 
-<div class="output execute_result" execution_count="2">
-
-    '/smartdata/proj_sdsc_TMP/windrad/data/train/'
-
-</div>
-
 </div>
 
 <div class="cell markdown">
