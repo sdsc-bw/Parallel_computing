@@ -16,22 +16,22 @@ conda nachinstalliert werden.
 
 </div>
 
-<div class="cell code">
+<div class="cell code" execution_count="1">
 
-    import warnings
-    warnings.filterwarnings("ignore")
-    import os
-    import pandas as pd
-    import time
-    import numpy as np
-    import sklearn as sk
-    from tqdm import tqdm
-    import dask.dataframe as dd
-    import intake
-    from dtreeviz.trees import *
+``` python
+import warnings
+warnings.filterwarnings("ignore")
+import os
+import time
+from tqdm import tqdm
 
-    %matplotlib inline
-    %config InteractiveShell.ast_node_interactivity="last_expr_or_assign"
+
+import sys 
+os.environ["PATH"] += os.pathsep + sys.prefix+'/bin'
+    
+%matplotlib inline
+%config InteractiveShell.ast_node_interactivity="last_expr_or_assign"
+```
 
 </div>
 
@@ -46,14 +46,33 @@ heruntergeladen werden.
 
 <div class="cell code" execution_count="2">
 
-    TRAIN_LABEL_PATH = "data/train_labels.csv"
-    TRAIN_PATH = "data/train/"
+``` python
+TRAIN_LABEL_PATH = "data/train_labels.csv"
+TRAIN_PATH = "data/train/"
+```
+
+<div class="output execute_result" execution_count="2">
+
+    'data/train/'
 
 </div>
 
-<div class="cell markdown">
+</div>
 
-![windrad](images/data.PNG)
+<div class="cell code" execution_count="59">
+
+``` python
+from IPython.display import Image
+Image('images/data.PNG')
+```
+
+<div class="output execute_result" execution_count="59">
+
+![](images/beda407a38eb9a47e0364a467fd97dcedc6f8cd4.png)
+
+    <IPython.core.display.Image object>
+
+</div>
 
 </div>
 
@@ -66,9 +85,323 @@ Sensoren alle 10 Minuten aufgezeichnet wurden.
 
 <div class="cell code" execution_count="3">
 
-    data= pd.read_csv("data/train/002/cbd192c9-5e59-3b3c-bae8-20f8ae9f2b36.csv")
+``` python
+import pandas as pd
+data= pd.read_csv("data/train/002/cbd192c9-5e59-3b3c-bae8-20f8ae9f2b36.csv")
+```
 
 <div class="output execute_result" execution_count="3">
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Wheel speed</th>
+      <th>hub angle</th>
+      <th>blade 1 angle</th>
+      <th>blade 2 angle</th>
+      <th>blade 3 angle</th>
+      <th>pitch motor 1 current</th>
+      <th>pitch motor 2 current</th>
+      <th>Pitch motor 3 current</th>
+      <th>overspeed sensor speed detection value</th>
+      <th>5 second yaw against wind average</th>
+      <th>...</th>
+      <th>blade 3 inverter box temperature</th>
+      <th>blade 1 super capacitor voltage</th>
+      <th>blade 2 super capacitor voltage</th>
+      <th>blade 3 super capacitor voltage</th>
+      <th>drive 1 thyristor temperature</th>
+      <th>Drive 2 thyristor temperature</th>
+      <th>Drive 3 thyristor temperature</th>
+      <th>Drive 1 output torque</th>
+      <th>Drive 2 output torque</th>
+      <th>Drive 3 output torque</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>14.63</td>
+      <td>154.01</td>
+      <td>0.24</td>
+      <td>0.31</td>
+      <td>0.22</td>
+      <td>12.48</td>
+      <td>13.58</td>
+      <td>14.00</td>
+      <td>14.91</td>
+      <td>2.6</td>
+      <td>...</td>
+      <td>300</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>13.74</td>
+      <td>312.77</td>
+      <td>0.24</td>
+      <td>0.31</td>
+      <td>0.22</td>
+      <td>11.36</td>
+      <td>11.14</td>
+      <td>13.06</td>
+      <td>13.95</td>
+      <td>8.7</td>
+      <td>...</td>
+      <td>300</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>13.55</td>
+      <td>73.76</td>
+      <td>0.24</td>
+      <td>0.31</td>
+      <td>0.22</td>
+      <td>11.74</td>
+      <td>11.90</td>
+      <td>14.64</td>
+      <td>13.81</td>
+      <td>5.4</td>
+      <td>...</td>
+      <td>300</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>12.21</td>
+      <td>132.26</td>
+      <td>0.24</td>
+      <td>0.31</td>
+      <td>0.22</td>
+      <td>10.08</td>
+      <td>10.30</td>
+      <td>12.20</td>
+      <td>12.47</td>
+      <td>-7.1</td>
+      <td>...</td>
+      <td>300</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>12.91</td>
+      <td>239.51</td>
+      <td>0.24</td>
+      <td>0.31</td>
+      <td>0.22</td>
+      <td>10.90</td>
+      <td>11.84</td>
+      <td>13.04</td>
+      <td>13.16</td>
+      <td>1.2</td>
+      <td>...</td>
+      <td>300</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>445</th>
+      <td>11.37</td>
+      <td>93.24</td>
+      <td>0.24</td>
+      <td>0.31</td>
+      <td>0.22</td>
+      <td>10.10</td>
+      <td>8.84</td>
+      <td>11.28</td>
+      <td>11.62</td>
+      <td>-27.1</td>
+      <td>...</td>
+      <td>300</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>446</th>
+      <td>14.37</td>
+      <td>194.51</td>
+      <td>0.24</td>
+      <td>0.31</td>
+      <td>0.22</td>
+      <td>12.20</td>
+      <td>13.46</td>
+      <td>14.64</td>
+      <td>14.65</td>
+      <td>1.6</td>
+      <td>...</td>
+      <td>300</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>447</th>
+      <td>12.31</td>
+      <td>82.76</td>
+      <td>0.24</td>
+      <td>0.31</td>
+      <td>0.22</td>
+      <td>10.00</td>
+      <td>10.10</td>
+      <td>12.02</td>
+      <td>12.60</td>
+      <td>-1.5</td>
+      <td>...</td>
+      <td>300</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>448</th>
+      <td>12.24</td>
+      <td>183.49</td>
+      <td>0.24</td>
+      <td>0.31</td>
+      <td>0.22</td>
+      <td>9.48</td>
+      <td>10.30</td>
+      <td>11.56</td>
+      <td>12.50</td>
+      <td>2.3</td>
+      <td>...</td>
+      <td>300</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>449</th>
+      <td>12.89</td>
+      <td>340.74</td>
+      <td>0.24</td>
+      <td>0.31</td>
+      <td>0.22</td>
+      <td>10.30</td>
+      <td>9.80</td>
+      <td>11.50</td>
+      <td>13.14</td>
+      <td>-7.7</td>
+      <td>...</td>
+      <td>300</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>450 rows × 75 columns</p>
+</div>
 
          Wheel speed  hub angle  blade 1 angle  blade 2 angle  blade 3 angle  \
     0          14.63     154.01           0.24           0.31           0.22   
@@ -188,7 +521,9 @@ Soviele Minuten umfasst die Datei:
 
 <div class="cell code" execution_count="4">
 
-    data.shape[0]*10
+``` python
+data.shape[0]*10
+```
 
 <div class="output execute_result" execution_count="4">
 
@@ -206,7 +541,9 @@ Die Spalten sind Zeitreihen
 
 <div class="cell code" execution_count="5">
 
-    data["Wheel speed"].plot()
+``` python
+data["Wheel speed"].plot()
+```
 
 <div class="output execute_result" execution_count="5">
 
@@ -216,7 +553,9 @@ Die Spalten sind Zeitreihen
 
 <div class="output display_data">
 
-![](ddc3a1a941edc752900efa0cf2e1a7dbd469fb2d.png)
+![](images/ddc3a1a941edc752900efa0cf2e1a7dbd469fb2d.png)
+
+    <Figure size 432x288 with 1 Axes>
 
 </div>
 
@@ -230,11 +569,108 @@ es sein den Defekt anhand der Zeitreihe vorherzusagen.
 
 </div>
 
-<div class="cell code" execution_count="14">
+<div class="cell code" execution_count="6">
 
-    label=pd.read_csv(TRAIN_LABEL_PATH)
+``` python
+label=pd.read_csv(TRAIN_LABEL_PATH)
+```
 
-<div class="output execute_result" execution_count="14">
+<div class="output execute_result" execution_count="6">
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>f_id</th>
+      <th>file_name</th>
+      <th>ret</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>95</td>
+      <td>dba63ee5-6603-300e-8071-8536afcbc2de.csv</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>95</td>
+      <td>0b8bfa51-cf28-35d0-94d2-7922f45120b2.csv</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>95</td>
+      <td>d7a64eee-165e-3d39-be67-adc82050bde3.csv</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>95</td>
+      <td>4da3314d-c5b0-3782-bdd6-27fb9e251261.csv</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>95</td>
+      <td>7d58a65f-af5a-3433-bcbb-a342b9468b71.csv</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>48334</th>
+      <td>11</td>
+      <td>d6e19de9-22a8-39e6-98c1-cc599c819a56.csv</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>48335</th>
+      <td>11</td>
+      <td>83895667-dc4e-303a-90e7-7dfc0725f476.csv</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>48336</th>
+      <td>11</td>
+      <td>a6ab9f83-4bea-323f-b08e-4a9fb4eab8d6.csv</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>48337</th>
+      <td>11</td>
+      <td>a19af894-a9c8-3127-87e4-39567f0a9e0c.csv</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>48338</th>
+      <td>11</td>
+      <td>861ce6ba-f676-3ea6-bfbb-16dfda24ac1a.csv</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+<p>48339 rows × 3 columns</p>
+</div>
 
            f_id                                 file_name  ret
     0        95  dba63ee5-6603-300e-8071-8536afcbc2de.csv    0
@@ -262,11 +698,13 @@ einfacher macht.
 
 </div>
 
-<div class="cell code" execution_count="17">
+<div class="cell code" execution_count="7">
 
-    label["ret"].hist()
+``` python
+label["ret"].hist()
+```
 
-<div class="output execute_result" execution_count="17">
+<div class="output execute_result" execution_count="7">
 
     <AxesSubplot:>
 
@@ -274,7 +712,9 @@ einfacher macht.
 
 <div class="output display_data">
 
-![](ac825d7c6c1d39eb12244517c33f1489e869c380.png)
+![](images/ac825d7c6c1d39eb12244517c33f1489e869c380.png)
+
+    <Figure size 432x288 with 1 Axes>
 
 </div>
 
@@ -291,28 +731,30 @@ der Karlsruher Firma BlueYonder
 
 </div>
 
-<div class="cell code" execution_count="19">
+<div class="cell code" execution_count="8">
 
-    %%timeit -r1 -n1 -o
-    import tsfresh
-    data["id"]="a"
-    tsfresh.extract_features(data,n_jobs=1,column_id="id")
+``` python
+%%timeit -r1 -n1 -o
+import tsfresh
+data["id"]="a"
+tsfresh.extract_features(data,n_jobs=1,column_id="id")
+```
 
 <div class="output stream stderr">
 
-    Feature Extraction: 100%|██████████| 5/5 [00:18<00:00,  3.78s/it]
+    Feature Extraction: 100%|██████████| 5/5 [00:19<00:00,  4.00s/it]
 
 </div>
 
 <div class="output stream stdout">
 
-    24.4 s ± 0 ns per loop (mean ± std. dev. of 1 run, 1 loop each)
+    29.4 s ± 0 ns per loop (mean ± std. dev. of 1 run, 1 loop each)
 
 </div>
 
-<div class="output execute_result" execution_count="19">
+<div class="output execute_result" execution_count="8">
 
-    <TimeitResult : 24.4 s ± 0 ns per loop (mean ± std. dev. of 1 run, 1 loop each)>
+    <TimeitResult : 29.4 s ± 0 ns per loop (mean ± std. dev. of 1 run, 1 loop each)>
 
 </div>
 
@@ -325,13 +767,15 @@ ca. so viele Stunden:
 
 </div>
 
-<div class="cell code" execution_count="20">
+<div class="cell code" execution_count="9">
 
-    label.shape[0]*_.average/60/60
+``` python
+label.shape[0]*_.average/60/60
+```
 
-<div class="output execute_result" execution_count="20">
+<div class="output execute_result" execution_count="9">
 
-    328.147238520002
+    394.79091108894903
 
 </div>
 
@@ -348,27 +792,29 @@ Parallelisierung nicht ganz linear skaliert
 <div class="cell markdown">
 
 Um die Liste aller Dateien zu bekommen, müssen wir übrigens noch den
-Pfad dran hängen und den Ordner dreistellig kodieren
+Pfad dran hängen und den Ordner dreistellig kodieren.
 
 </div>
 
-<div class="cell code" execution_count="22">
+<div class="cell code" execution_count="10">
 
-    files=label.apply(lambda row: TRAIN_PATH+"{:03d}/{}".format(row["f_id"],row["file_name"]),axis=1)
+``` python
+files=label.apply(lambda row: os.path.abspath(TRAIN_PATH+"{:03d}/{}".format(row["f_id"],row["file_name"])),axis=1)
+```
 
-<div class="output execute_result" execution_count="22">
+<div class="output execute_result" execution_count="10">
 
-    0        /smartdata/proj_sdsc_TMP/windrad/data/train/09...
-    1        /smartdata/proj_sdsc_TMP/windrad/data/train/09...
-    2        /smartdata/proj_sdsc_TMP/windrad/data/train/09...
-    3        /smartdata/proj_sdsc_TMP/windrad/data/train/09...
-    4        /smartdata/proj_sdsc_TMP/windrad/data/train/09...
+    0        /gpfs/smartdata/iu5681/src/Parallel_computing/...
+    1        /gpfs/smartdata/iu5681/src/Parallel_computing/...
+    2        /gpfs/smartdata/iu5681/src/Parallel_computing/...
+    3        /gpfs/smartdata/iu5681/src/Parallel_computing/...
+    4        /gpfs/smartdata/iu5681/src/Parallel_computing/...
                                    ...                        
-    48334    /smartdata/proj_sdsc_TMP/windrad/data/train/01...
-    48335    /smartdata/proj_sdsc_TMP/windrad/data/train/01...
-    48336    /smartdata/proj_sdsc_TMP/windrad/data/train/01...
-    48337    /smartdata/proj_sdsc_TMP/windrad/data/train/01...
-    48338    /smartdata/proj_sdsc_TMP/windrad/data/train/01...
+    48334    /gpfs/smartdata/iu5681/src/Parallel_computing/...
+    48335    /gpfs/smartdata/iu5681/src/Parallel_computing/...
+    48336    /gpfs/smartdata/iu5681/src/Parallel_computing/...
+    48337    /gpfs/smartdata/iu5681/src/Parallel_computing/...
+    48338    /gpfs/smartdata/iu5681/src/Parallel_computing/...
     Length: 48339, dtype: object
 
 </div>
@@ -382,12 +828,14 @@ auch nicht. Insgesamt sprechen wir über soviele Gigabyte:
 
 </div>
 
-<div class="cell code" execution_count="31">
+<div class="cell code" execution_count="11">
 
-    from pathlib import Path
-    sum(Path(f).stat().st_size  for f in files) /(1024**3)
+``` python
+from pathlib import Path
+sum(Path(f).stat().st_size  for f in files) /(1024**3)
+```
 
-<div class="output execute_result" execution_count="31">
+<div class="output execute_result" execution_count="11">
 
     6.261525361798704
 
@@ -402,12 +850,14 @@ Dateien anzuwenden
 
 </div>
 
-<div class="cell code" execution_count="33">
+<div class="cell code" execution_count="12">
 
-    def get_features(file):
-        data= pd.read_csv(file)
-        data["id"]=file
-        return tsfresh.extract_features(data,disable_progressbar=True, n_jobs=1,column_id="id")
+``` python
+def get_features(file):
+    data= pd.read_csv(file)
+    data["id"]=file
+    return tsfresh.extract_features(data,disable_progressbar=True, n_jobs=1,column_id="id")
+```
 
 </div>
 
@@ -418,12 +868,14 @@ verwenden
 
 </div>
 
-<div class="cell code" execution_count="35">
+<div class="cell code" execution_count="13">
 
-    def get_features(file):
-        data= pd.read_csv(file)
-        data["id"]=file
-        return data.groupby("id").agg(["mean","max","min"])
+``` python
+def get_features(file):
+    data= pd.read_csv(file)
+    data["path"]=file
+    return data.groupby("path").agg(["mean","var","min","max"])
+```
 
 </div>
 
@@ -435,21 +887,23 @@ zuständig
 
 </div>
 
-<div class="cell code" execution_count="37">
+<div class="cell code" execution_count="14">
 
-    %%time
-    features=pd.concat(get_features(f) for f in tqdm(files[0:100]))
+``` python
+%%time
+features=pd.concat(get_features(f) for f in tqdm(files[0:100]))
+```
 
 <div class="output stream stderr">
 
-    100%|██████████| 100/100 [00:22<00:00,  4.48it/s]
+    100%|██████████| 100/100 [00:25<00:00,  3.95it/s]
 
 </div>
 
 <div class="output stream stdout">
 
-    CPU times: user 21.8 s, sys: 57.2 ms, total: 21.9 s
-    Wall time: 23.4 s
+    CPU times: user 25.7 s, sys: 83.7 ms, total: 25.8 s
+    Wall time: 26.4 s
 
 </div>
 
@@ -466,22 +920,24 @@ Festplatte).
 
 </div>
 
-<div class="cell code" execution_count="38">
+<div class="cell code" execution_count="15">
 
-    %%time
-    from joblib import Parallel, delayed
-    features=pd.concat(Parallel(n_jobs=4)(delayed(get_features)(f) for f in tqdm(files[0:100])))
+``` python
+%%time
+from joblib import Parallel, delayed
+features=pd.concat(Parallel(n_jobs=4)(delayed(get_features)(f) for f in tqdm(files[0:100])))
+```
 
 <div class="output stream stderr">
 
-    100%|██████████| 100/100 [00:15<00:00,  6.27it/s]
+    100%|██████████| 100/100 [00:07<00:00, 13.34it/s]
 
 </div>
 
 <div class="output stream stdout">
 
-    CPU times: user 6.9 s, sys: 186 ms, total: 7.09 s
-    Wall time: 17.7 s
+    CPU times: user 7.12 s, sys: 264 ms, total: 7.39 s
+    Wall time: 9.18 s
 
 </div>
 
@@ -503,19 +959,28 @@ Rechner mit 8 Prozessorkernen und je 32GB RAM und ner kleinen Festplatte
 
 </div>
 
-<div class="cell code" execution_count="39">
+<div class="cell code" execution_count="16">
 
-    from dask_jobqueue import HTCondorCluster
-    from distributed import Client
+``` python
+import dask.dataframe as dd
+from dask_jobqueue import HTCondorCluster
+from distributed import Client
+from dask.distributed import progress
 
-    os.environ["_condor_SCHEDD_HOST"]="login-l.sdil.kit.edu"
-    cluster= HTCondorCluster(cores=8, memory= "32GB", disk="400MB")
-    client=Client(cluster)
-    cluster
+
+os.environ["_condor_SCHEDD_HOST"]="login-l.sdil.kit.edu"
+cluster= HTCondorCluster(cores=8, memory= "32GB", disk="400MB")
+client=Client(cluster)
+cluster
+```
 
 <div class="output display_data">
 
-    {"model_id":"5cea1041d7f34e24bbfdb2f22532d55a","version_major":2,"version_minor":0}
+``` json
+{"model_id":"14b0f68e1e134a8894544204f6ab27a4","version_major":2,"version_minor":0}
+```
+
+    VBox(children=(HTML(value='<h2>HTCondorCluster</h2>'), HBox(children=(HTML(value='\n<div>\n  <style scoped>\n …
 
 </div>
 
@@ -528,9 +993,11 @@ hochskalieren.
 
 </div>
 
-<div class="cell code" execution_count="41">
+<div class="cell code" execution_count="17">
 
-    cluster.scale(32)
+``` python
+cluster.scale(160)
+```
 
 </div>
 
@@ -544,23 +1011,25 @@ geschickt werden)
 
 </div>
 
-<div class="cell code" execution_count="43">
+<div class="cell code" execution_count="18">
 
-    %%time
-    from joblib import parallel_backend
-    with parallel_backend('dask'):
-        features=pd.concat(Parallel()(delayed(get_features)(f) for f in tqdm(files[0:100])))
+``` python
+%%time
+from joblib import parallel_backend
+with parallel_backend('dask'):
+    features=pd.concat(Parallel()(delayed(get_features)(f) for f in tqdm(files[0:100])))
+```
 
 <div class="output stream stderr">
 
-    100%|██████████| 100/100 [00:00<00:00, 11782.08it/s]
+    100%|██████████| 100/100 [00:08<00:00, 11.55it/s]
 
 </div>
 
 <div class="output stream stdout">
 
-    CPU times: user 7.41 s, sys: 201 ms, total: 7.61 s
-    Wall time: 7.65 s
+    CPU times: user 6.8 s, sys: 306 ms, total: 7.1 s
+    Wall time: 11.6 s
 
 </div>
 
@@ -570,26 +1039,603 @@ geschickt werden)
 
 Es geht aber noch einfacher. Die Idee von Big Data ist es das
 Berechnungsgraphen auf großen verteilten Datenquellen ausgeführt werden.
-Wir nutzen hier das Paket [intake](https://github.com/intake/intake/) um
-die Datenquelle verteilt in dask zu laden.
 
 </div>
 
-<div class="cell code" execution_count="45">
+<div class="cell code" execution_count="19">
 
-    ddf=intake.open_csv(TRAIN_PATH+"006/02{file_name}.csv").to_dask()
+``` python
+ddf=dd.read_csv(TRAIN_PATH+"006/02*.csv",include_path_column=True)
+```
 
-<div class="output execute_result" execution_count="45">
+<div class="output execute_result" execution_count="19">
+
+<div><strong>Dask DataFrame Structure:</strong></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Wheel speed</th>
+      <th>hub angle</th>
+      <th>blade 1 angle</th>
+      <th>blade 2 angle</th>
+      <th>blade 3 angle</th>
+      <th>pitch motor 1 current</th>
+      <th>pitch motor 2 current</th>
+      <th>Pitch motor 3 current</th>
+      <th>overspeed sensor speed detection value</th>
+      <th>5 second yaw against wind average</th>
+      <th>x direction vibration value</th>
+      <th>y direction vibration value</th>
+      <th>hydraulic brake pressure</th>
+      <th>Aircraft weather station wind speed</th>
+      <th>wind direction absolute value</th>
+      <th>atmospheric pressure</th>
+      <th>reactive power control status</th>
+      <th>inverter grid side current</th>
+      <th>inverter grid side voltage</th>
+      <th>Inverter grid side active power</th>
+      <th>inverter grid side reactive power</th>
+      <th>inverter generator side power</th>
+      <th>generator operating frequency</th>
+      <th>generator current</th>
+      <th>generator torque</th>
+      <th>Inverter inlet temperature</th>
+      <th>inverter outlet temperature</th>
+      <th>inverter inlet pressure</th>
+      <th>inverter outlet pressure</th>
+      <th>generator power limit value</th>
+      <th>reactive power set value</th>
+      <th>Rated hub speed</th>
+      <th>wind tower ambient temperature</th>
+      <th>generator stator temperature 1</th>
+      <th>generator stator temperature 2</th>
+      <th>generator stator temperature 3</th>
+      <th>generator stator temperature 4</th>
+      <th>Generator stator temperature 5</th>
+      <th>generator stator temperature 6</th>
+      <th>generator air temperature 1</th>
+      <th>generator air temperature 2</th>
+      <th>main bearing temperature 1</th>
+      <th>main bearing temperature 2</th>
+      <th>Wheel temperature</th>
+      <th>Wheel control cabinet temperature</th>
+      <th>Cabin temperature</th>
+      <th>Cabin control cabinet temperature</th>
+      <th>Inverter INU temperature</th>
+      <th>Inverter ISU temperature</th>
+      <th>Inverter INU RMIO temperature</th>
+      <th>Pitch motor 1 power estimation</th>
+      <th>Pitch motor 2 power estimation</th>
+      <th>Pitch motor 3 power estimation</th>
+      <th>Fan current status value</th>
+      <th>hub current status value</th>
+      <th>yaw state value</th>
+      <th>yaw request value</th>
+      <th>blade 1 battery box temperature</th>
+      <th>blade 2 battery box temperature</th>
+      <th>blade 3 battery box temperature</th>
+      <th>vane 1 pitch motor temperature</th>
+      <th>blade 2 pitch motor temperature</th>
+      <th>blade 3 pitch motor temperature</th>
+      <th>blade 1 inverter box temperature</th>
+      <th>blade 2 inverter box temperature</th>
+      <th>blade 3 inverter box temperature</th>
+      <th>blade 1 super capacitor voltage</th>
+      <th>blade 2 super capacitor voltage</th>
+      <th>blade 3 super capacitor voltage</th>
+      <th>drive 1 thyristor temperature</th>
+      <th>Drive 2 thyristor temperature</th>
+      <th>Drive 3 thyristor temperature</th>
+      <th>Drive 1 output torque</th>
+      <th>Drive 2 output torque</th>
+      <th>Drive 3 output torque</th>
+      <th>path</th>
+    </tr>
+    <tr>
+      <th>npartitions=9</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th></th>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>category[known]</td>
+    </tr>
+    <tr>
+      <th></th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th></th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th></th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div>Dask Name: read-csv, 9 tasks</div>
 
     Dask DataFrame Structure:
-                  Wheel speed hub angle blade 1 angle blade 2 angle blade 3 angle pitch motor 1 current pitch motor 2 current Pitch motor 3 current overspeed sensor speed detection value 5 second yaw against wind average x direction vibration value y direction vibration value hydraulic brake pressure Aircraft weather station wind speed wind direction absolute value atmospheric pressure reactive power control status inverter grid side current inverter grid side voltage Inverter grid side active power inverter grid side reactive power inverter generator side power generator operating frequency generator current generator torque Inverter inlet temperature inverter outlet temperature inverter inlet pressure inverter outlet pressure generator power limit value reactive power set value Rated hub speed wind tower ambient temperature generator stator temperature 1 generator stator temperature 2 generator stator temperature 3 generator stator temperature 4 Generator stator temperature 5 generator stator temperature 6 generator air temperature 1 generator air temperature 2 main bearing temperature 1 main bearing temperature 2 Wheel temperature Wheel control cabinet temperature Cabin temperature Cabin control cabinet temperature Inverter INU temperature Inverter ISU temperature Inverter INU RMIO temperature Pitch motor 1 power estimation Pitch motor 2 power estimation Pitch motor 3 power estimation Fan current status value hub current status value yaw state value yaw request value blade 1 battery box temperature blade 2 battery box temperature blade 3 battery box temperature vane 1 pitch motor temperature blade 2 pitch motor temperature blade 3 pitch motor temperature blade 1 inverter box temperature blade 2 inverter box temperature blade 3 inverter box temperature blade 1 super capacitor voltage blade 2 super capacitor voltage blade 3 super capacitor voltage drive 1 thyristor temperature Drive 2 thyristor temperature Drive 3 thyristor temperature Drive 1 output torque Drive 2 output torque Drive 3 output torque        file_name
+                  Wheel speed hub angle blade 1 angle blade 2 angle blade 3 angle pitch motor 1 current pitch motor 2 current Pitch motor 3 current overspeed sensor speed detection value 5 second yaw against wind average x direction vibration value y direction vibration value hydraulic brake pressure Aircraft weather station wind speed wind direction absolute value atmospheric pressure reactive power control status inverter grid side current inverter grid side voltage Inverter grid side active power inverter grid side reactive power inverter generator side power generator operating frequency generator current generator torque Inverter inlet temperature inverter outlet temperature inverter inlet pressure inverter outlet pressure generator power limit value reactive power set value Rated hub speed wind tower ambient temperature generator stator temperature 1 generator stator temperature 2 generator stator temperature 3 generator stator temperature 4 Generator stator temperature 5 generator stator temperature 6 generator air temperature 1 generator air temperature 2 main bearing temperature 1 main bearing temperature 2 Wheel temperature Wheel control cabinet temperature Cabin temperature Cabin control cabinet temperature Inverter INU temperature Inverter ISU temperature Inverter INU RMIO temperature Pitch motor 1 power estimation Pitch motor 2 power estimation Pitch motor 3 power estimation Fan current status value hub current status value yaw state value yaw request value blade 1 battery box temperature blade 2 battery box temperature blade 3 battery box temperature vane 1 pitch motor temperature blade 2 pitch motor temperature blade 3 pitch motor temperature blade 1 inverter box temperature blade 2 inverter box temperature blade 3 inverter box temperature blade 1 super capacitor voltage blade 2 super capacitor voltage blade 3 super capacitor voltage drive 1 thyristor temperature Drive 2 thyristor temperature Drive 3 thyristor temperature Drive 1 output torque Drive 2 output torque Drive 3 output torque             path
     npartitions=9                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
                       float64   float64       float64       float64       float64               float64               float64               float64                                float64                           float64                     float64                     float64                  float64                             float64                       float64              float64                       float64                    float64                    float64                         float64                           float64                       float64                       float64           float64          float64                    float64                     float64                 float64                  float64                     float64                  float64         float64                        float64                        float64                        float64                        float64                        float64                        float64                        float64                     float64                     float64                    float64                    float64           float64                           float64           float64                           float64                  float64                  float64                       float64                        float64                        float64                        float64                  float64                  float64         float64           float64                         float64                         float64                         float64                        float64                         float64                         float64                          float64                          float64                          float64                         float64                         float64                         float64                       float64                       float64                       float64               float64               float64               float64  category[known]
                           ...       ...           ...           ...           ...                   ...                   ...                   ...                                    ...                               ...                         ...                         ...                      ...                                 ...                           ...                  ...                           ...                        ...                        ...                             ...                               ...                           ...                           ...               ...              ...                        ...                         ...                     ...                      ...                         ...                      ...             ...                            ...                            ...                            ...                            ...                            ...                            ...                            ...                         ...                         ...                        ...                        ...               ...                               ...               ...                               ...                      ...                      ...                           ...                            ...                            ...                            ...                      ...                      ...             ...               ...                             ...                             ...                             ...                            ...                             ...                             ...                              ...                              ...                              ...                             ...                             ...                             ...                           ...                           ...                           ...                   ...                   ...                   ...              ...
     ...                   ...       ...           ...           ...           ...                   ...                   ...                   ...                                    ...                               ...                         ...                         ...                      ...                                 ...                           ...                  ...                           ...                        ...                        ...                             ...                               ...                           ...                           ...               ...              ...                        ...                         ...                     ...                      ...                         ...                      ...             ...                            ...                            ...                            ...                            ...                            ...                            ...                            ...                         ...                         ...                        ...                        ...               ...                               ...               ...                               ...                      ...                      ...                           ...                            ...                            ...                            ...                      ...                      ...             ...               ...                             ...                             ...                             ...                            ...                             ...                             ...                              ...                              ...                              ...                             ...                             ...                             ...                           ...                           ...                           ...                   ...                   ...                   ...              ...
                           ...       ...           ...           ...           ...                   ...                   ...                   ...                                    ...                               ...                         ...                         ...                      ...                                 ...                           ...                  ...                           ...                        ...                        ...                             ...                               ...                           ...                           ...               ...              ...                        ...                         ...                     ...                      ...                         ...                      ...             ...                            ...                            ...                            ...                            ...                            ...                            ...                            ...                         ...                         ...                        ...                        ...               ...                               ...               ...                               ...                      ...                      ...                           ...                            ...                            ...                            ...                      ...                      ...             ...               ...                             ...                             ...                             ...                            ...                             ...                             ...                              ...                              ...                              ...                             ...                             ...                             ...                           ...                           ...                           ...                   ...                   ...                   ...              ...
                           ...       ...           ...           ...           ...                   ...                   ...                   ...                                    ...                               ...                         ...                         ...                      ...                                 ...                           ...                  ...                           ...                        ...                        ...                             ...                               ...                           ...                           ...               ...              ...                        ...                         ...                     ...                      ...                         ...                      ...             ...                            ...                            ...                            ...                            ...                            ...                            ...                            ...                         ...                         ...                        ...                        ...               ...                               ...               ...                               ...                      ...                      ...                           ...                            ...                            ...                            ...                      ...                      ...             ...               ...                             ...                             ...                             ...                            ...                             ...                             ...                              ...                              ...                              ...                             ...                             ...                             ...                           ...                           ...                           ...                   ...                   ...                   ...              ...
-    Dask Name: drop_by_shallow_copy, 63 tasks
+    Dask Name: read-csv, 9 tasks
 
 </div>
 
@@ -604,11 +1650,180 @@ anzulegen. Wir können aber z.B. sehr schnell die ersten Daten anschauen
 
 </div>
 
-<div class="cell code" execution_count="46">
+<div class="cell code" execution_count="20">
 
-    ddf.head()
+``` python
+ddf.head()
+```
 
-<div class="output execute_result" execution_count="46">
+<div class="output execute_result" execution_count="20">
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Wheel speed</th>
+      <th>hub angle</th>
+      <th>blade 1 angle</th>
+      <th>blade 2 angle</th>
+      <th>blade 3 angle</th>
+      <th>pitch motor 1 current</th>
+      <th>pitch motor 2 current</th>
+      <th>Pitch motor 3 current</th>
+      <th>overspeed sensor speed detection value</th>
+      <th>5 second yaw against wind average</th>
+      <th>...</th>
+      <th>blade 1 super capacitor voltage</th>
+      <th>blade 2 super capacitor voltage</th>
+      <th>blade 3 super capacitor voltage</th>
+      <th>drive 1 thyristor temperature</th>
+      <th>Drive 2 thyristor temperature</th>
+      <th>Drive 3 thyristor temperature</th>
+      <th>Drive 1 output torque</th>
+      <th>Drive 2 output torque</th>
+      <th>Drive 3 output torque</th>
+      <th>path</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1.77</td>
+      <td>339.01</td>
+      <td>21.0</td>
+      <td>21.01</td>
+      <td>21.0</td>
+      <td>1.88</td>
+      <td>2.64</td>
+      <td>1.76</td>
+      <td>1.78</td>
+      <td>-18.5</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>/gpfs/smartdata/iu5681/src/Parallel_computing/...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1.82</td>
+      <td>123.01</td>
+      <td>21.0</td>
+      <td>21.01</td>
+      <td>21.0</td>
+      <td>1.10</td>
+      <td>2.54</td>
+      <td>1.58</td>
+      <td>1.82</td>
+      <td>-14.0</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>/gpfs/smartdata/iu5681/src/Parallel_computing/...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1.82</td>
+      <td>230.00</td>
+      <td>21.0</td>
+      <td>21.01</td>
+      <td>21.0</td>
+      <td>1.56</td>
+      <td>2.70</td>
+      <td>1.40</td>
+      <td>1.82</td>
+      <td>1.8</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>/gpfs/smartdata/iu5681/src/Parallel_computing/...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1.73</td>
+      <td>33.98</td>
+      <td>21.0</td>
+      <td>21.01</td>
+      <td>21.0</td>
+      <td>0.80</td>
+      <td>2.70</td>
+      <td>0.86</td>
+      <td>1.74</td>
+      <td>-12.9</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>/gpfs/smartdata/iu5681/src/Parallel_computing/...</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1.75</td>
+      <td>82.01</td>
+      <td>21.0</td>
+      <td>21.01</td>
+      <td>21.0</td>
+      <td>1.64</td>
+      <td>2.70</td>
+      <td>1.82</td>
+      <td>1.78</td>
+      <td>-14.6</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>/gpfs/smartdata/iu5681/src/Parallel_computing/...</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 76 columns</p>
+</div>
 
        Wheel speed  hub angle  blade 1 angle  blade 2 angle  blade 3 angle  \
     0         1.77     339.01           21.0          21.01           21.0   
@@ -659,12 +1874,12 @@ anzulegen. Wir können aber z.B. sehr schnell die ersten Daten anschauen
     3                    0.0                    0.0                    0.0   
     4                    0.0                    0.0                    0.0   
 
-                                file_name  
-    0  393eca-db4c-39a5-abd9-569ead6e26a7  
-    1  393eca-db4c-39a5-abd9-569ead6e26a7  
-    2  393eca-db4c-39a5-abd9-569ead6e26a7  
-    3  393eca-db4c-39a5-abd9-569ead6e26a7  
-    4  393eca-db4c-39a5-abd9-569ead6e26a7  
+                                                    path  
+    0  /gpfs/smartdata/iu5681/src/Parallel_computing/...  
+    1  /gpfs/smartdata/iu5681/src/Parallel_computing/...  
+    2  /gpfs/smartdata/iu5681/src/Parallel_computing/...  
+    3  /gpfs/smartdata/iu5681/src/Parallel_computing/...  
+    4  /gpfs/smartdata/iu5681/src/Parallel_computing/...  
 
     [5 rows x 76 columns]
 
@@ -680,11 +1895,1331 @@ einzulesen
 
 </div>
 
-<div class="cell code" execution_count="48">
+<div class="cell code" execution_count="21">
 
-    dfeatures=ddf.groupby(['file_name']).agg(["mean","var","min","max"])
+``` python
+dfeatures=ddf.groupby(['path']).agg(["mean","var","min","max"])
+```
 
-<div class="output execute_result" execution_count="48">
+<div class="output execute_result" execution_count="21">
+
+<div><strong>Dask DataFrame Structure:</strong></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead tr th {
+        text-align: left;
+    }
+
+    .dataframe thead tr:last-of-type th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr>
+      <th></th>
+      <th colspan="4" halign="left">Wheel speed</th>
+      <th colspan="4" halign="left">hub angle</th>
+      <th colspan="4" halign="left">blade 1 angle</th>
+      <th colspan="4" halign="left">blade 2 angle</th>
+      <th colspan="4" halign="left">blade 3 angle</th>
+      <th colspan="4" halign="left">pitch motor 1 current</th>
+      <th colspan="4" halign="left">pitch motor 2 current</th>
+      <th colspan="4" halign="left">Pitch motor 3 current</th>
+      <th colspan="4" halign="left">overspeed sensor speed detection value</th>
+      <th colspan="4" halign="left">5 second yaw against wind average</th>
+      <th colspan="4" halign="left">x direction vibration value</th>
+      <th colspan="4" halign="left">y direction vibration value</th>
+      <th colspan="4" halign="left">hydraulic brake pressure</th>
+      <th colspan="4" halign="left">Aircraft weather station wind speed</th>
+      <th colspan="4" halign="left">wind direction absolute value</th>
+      <th colspan="4" halign="left">atmospheric pressure</th>
+      <th colspan="4" halign="left">reactive power control status</th>
+      <th colspan="4" halign="left">inverter grid side current</th>
+      <th colspan="4" halign="left">inverter grid side voltage</th>
+      <th colspan="4" halign="left">Inverter grid side active power</th>
+      <th colspan="4" halign="left">inverter grid side reactive power</th>
+      <th colspan="4" halign="left">inverter generator side power</th>
+      <th colspan="4" halign="left">generator operating frequency</th>
+      <th colspan="4" halign="left">generator current</th>
+      <th colspan="4" halign="left">generator torque</th>
+      <th colspan="4" halign="left">Inverter inlet temperature</th>
+      <th colspan="4" halign="left">inverter outlet temperature</th>
+      <th colspan="4" halign="left">inverter inlet pressure</th>
+      <th colspan="4" halign="left">inverter outlet pressure</th>
+      <th colspan="4" halign="left">generator power limit value</th>
+      <th colspan="4" halign="left">reactive power set value</th>
+      <th colspan="4" halign="left">Rated hub speed</th>
+      <th colspan="4" halign="left">wind tower ambient temperature</th>
+      <th colspan="4" halign="left">generator stator temperature 1</th>
+      <th colspan="4" halign="left">generator stator temperature 2</th>
+      <th colspan="4" halign="left">generator stator temperature 3</th>
+      <th colspan="4" halign="left">generator stator temperature 4</th>
+      <th colspan="4" halign="left">Generator stator temperature 5</th>
+      <th colspan="4" halign="left">generator stator temperature 6</th>
+      <th colspan="4" halign="left">generator air temperature 1</th>
+      <th colspan="4" halign="left">generator air temperature 2</th>
+      <th colspan="4" halign="left">main bearing temperature 1</th>
+      <th colspan="4" halign="left">main bearing temperature 2</th>
+      <th colspan="4" halign="left">Wheel temperature</th>
+      <th colspan="4" halign="left">Wheel control cabinet temperature</th>
+      <th colspan="4" halign="left">Cabin temperature</th>
+      <th colspan="4" halign="left">Cabin control cabinet temperature</th>
+      <th colspan="4" halign="left">Inverter INU temperature</th>
+      <th colspan="4" halign="left">Inverter ISU temperature</th>
+      <th colspan="4" halign="left">Inverter INU RMIO temperature</th>
+      <th colspan="4" halign="left">Pitch motor 1 power estimation</th>
+      <th colspan="4" halign="left">Pitch motor 2 power estimation</th>
+      <th colspan="4" halign="left">Pitch motor 3 power estimation</th>
+      <th colspan="4" halign="left">Fan current status value</th>
+      <th colspan="4" halign="left">hub current status value</th>
+      <th colspan="4" halign="left">yaw state value</th>
+      <th colspan="4" halign="left">yaw request value</th>
+      <th colspan="4" halign="left">blade 1 battery box temperature</th>
+      <th colspan="4" halign="left">blade 2 battery box temperature</th>
+      <th colspan="4" halign="left">blade 3 battery box temperature</th>
+      <th colspan="4" halign="left">vane 1 pitch motor temperature</th>
+      <th colspan="4" halign="left">blade 2 pitch motor temperature</th>
+      <th colspan="4" halign="left">blade 3 pitch motor temperature</th>
+      <th colspan="4" halign="left">blade 1 inverter box temperature</th>
+      <th colspan="4" halign="left">blade 2 inverter box temperature</th>
+      <th colspan="4" halign="left">blade 3 inverter box temperature</th>
+      <th colspan="4" halign="left">blade 1 super capacitor voltage</th>
+      <th colspan="4" halign="left">blade 2 super capacitor voltage</th>
+      <th colspan="4" halign="left">blade 3 super capacitor voltage</th>
+      <th colspan="4" halign="left">drive 1 thyristor temperature</th>
+      <th colspan="4" halign="left">Drive 2 thyristor temperature</th>
+      <th colspan="4" halign="left">Drive 3 thyristor temperature</th>
+      <th colspan="4" halign="left">Drive 1 output torque</th>
+      <th colspan="4" halign="left">Drive 2 output torque</th>
+      <th colspan="4" halign="left">Drive 3 output torque</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+    </tr>
+    <tr>
+      <th>npartitions=1</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th></th>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+    </tr>
+    <tr>
+      <th></th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div>Dask Name: aggregate-agg, 21 tasks</div>
 
     Dask DataFrame Structure:
                   Wheel speed                            hub angle                            blade 1 angle                            blade 2 angle                            blade 3 angle                            pitch motor 1 current                            pitch motor 2 current                            Pitch motor 3 current                            overspeed sensor speed detection value                            5 second yaw against wind average                            x direction vibration value                            y direction vibration value                            hydraulic brake pressure                            Aircraft weather station wind speed                            wind direction absolute value                            atmospheric pressure                            reactive power control status                            inverter grid side current                            inverter grid side voltage                            Inverter grid side active power                            inverter grid side reactive power                            inverter generator side power                            generator operating frequency                            generator current                            generator torque                            Inverter inlet temperature                            inverter outlet temperature                            inverter inlet pressure                            inverter outlet pressure                            generator power limit value                            reactive power set value                            Rated hub speed                            wind tower ambient temperature                            generator stator temperature 1                            generator stator temperature 2                            generator stator temperature 3                            generator stator temperature 4                            Generator stator temperature 5                            generator stator temperature 6                            generator air temperature 1                            generator air temperature 2                            main bearing temperature 1                            main bearing temperature 2                            Wheel temperature                            Wheel control cabinet temperature                            Cabin temperature                            Cabin control cabinet temperature                            Inverter INU temperature                            Inverter ISU temperature                            Inverter INU RMIO temperature                            Pitch motor 1 power estimation                            Pitch motor 2 power estimation                            Pitch motor 3 power estimation                            Fan current status value                            hub current status value                            yaw state value                            yaw request value                            blade 1 battery box temperature                            blade 2 battery box temperature                            blade 3 battery box temperature                            vane 1 pitch motor temperature                            blade 2 pitch motor temperature                            blade 3 pitch motor temperature                            blade 1 inverter box temperature                            blade 2 inverter box temperature                            blade 3 inverter box temperature                            blade 1 super capacitor voltage                            blade 2 super capacitor voltage                            blade 3 super capacitor voltage                            drive 1 thyristor temperature                            Drive 2 thyristor temperature                            Drive 3 thyristor temperature                            Drive 1 output torque                            Drive 2 output torque                            Drive 3 output torque                           
@@ -692,7 +3227,7 @@ einzulesen
     npartitions=1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
                       float64  float64  float64  float64   float64  float64  float64  float64       float64  float64  float64  float64       float64  float64  float64  float64       float64  float64  float64  float64               float64  float64  float64  float64               float64  float64  float64  float64               float64  float64  float64  float64                                float64  float64  float64  float64                           float64  float64  float64  float64                     float64  float64  float64  float64                     float64  float64  float64  float64                  float64  float64  float64  float64                             float64  float64  float64  float64                       float64  float64  float64  float64              float64  float64  float64  float64                       float64  float64  float64  float64                    float64  float64  float64  float64                    float64  float64  float64  float64                         float64  float64  float64  float64                           float64  float64  float64  float64                       float64  float64  float64  float64                       float64  float64  float64  float64           float64  float64  float64  float64          float64  float64  float64  float64                    float64  float64  float64  float64                     float64  float64  float64  float64                 float64  float64  float64  float64                  float64  float64  float64  float64                     float64  float64  float64  float64                  float64  float64  float64  float64         float64  float64  float64  float64                        float64  float64  float64  float64                        float64  float64  float64  float64                        float64  float64  float64  float64                        float64  float64  float64  float64                        float64  float64  float64  float64                        float64  float64  float64  float64                        float64  float64  float64  float64                     float64  float64  float64  float64                     float64  float64  float64  float64                    float64  float64  float64  float64                    float64  float64  float64  float64           float64  float64  float64  float64                           float64  float64  float64  float64           float64  float64  float64  float64                           float64  float64  float64  float64                  float64  float64  float64  float64                  float64  float64  float64  float64                       float64  float64  float64  float64                        float64  float64  float64  float64                        float64  float64  float64  float64                        float64  float64  float64  float64                  float64  float64  float64  float64                  float64  float64  float64  float64         float64  float64  float64  float64           float64  float64  float64  float64                         float64  float64  float64  float64                         float64  float64  float64  float64                         float64  float64  float64  float64                        float64  float64  float64  float64                         float64  float64  float64  float64                         float64  float64  float64  float64                          float64  float64  float64  float64                          float64  float64  float64  float64                          float64  float64  float64  float64                         float64  float64  float64  float64                         float64  float64  float64  float64                         float64  float64  float64  float64                       float64  float64  float64  float64                       float64  float64  float64  float64                       float64  float64  float64  float64               float64  float64  float64  float64               float64  float64  float64  float64               float64  float64  float64  float64
                           ...      ...      ...      ...       ...      ...      ...      ...           ...      ...      ...      ...           ...      ...      ...      ...           ...      ...      ...      ...                   ...      ...      ...      ...                   ...      ...      ...      ...                   ...      ...      ...      ...                                    ...      ...      ...      ...                               ...      ...      ...      ...                         ...      ...      ...      ...                         ...      ...      ...      ...                      ...      ...      ...      ...                                 ...      ...      ...      ...                           ...      ...      ...      ...                  ...      ...      ...      ...                           ...      ...      ...      ...                        ...      ...      ...      ...                        ...      ...      ...      ...                             ...      ...      ...      ...                               ...      ...      ...      ...                           ...      ...      ...      ...                           ...      ...      ...      ...               ...      ...      ...      ...              ...      ...      ...      ...                        ...      ...      ...      ...                         ...      ...      ...      ...                     ...      ...      ...      ...                      ...      ...      ...      ...                         ...      ...      ...      ...                      ...      ...      ...      ...             ...      ...      ...      ...                            ...      ...      ...      ...                            ...      ...      ...      ...                            ...      ...      ...      ...                            ...      ...      ...      ...                            ...      ...      ...      ...                            ...      ...      ...      ...                            ...      ...      ...      ...                         ...      ...      ...      ...                         ...      ...      ...      ...                        ...      ...      ...      ...                        ...      ...      ...      ...               ...      ...      ...      ...                               ...      ...      ...      ...               ...      ...      ...      ...                               ...      ...      ...      ...                      ...      ...      ...      ...                      ...      ...      ...      ...                           ...      ...      ...      ...                            ...      ...      ...      ...                            ...      ...      ...      ...                            ...      ...      ...      ...                      ...      ...      ...      ...                      ...      ...      ...      ...             ...      ...      ...      ...               ...      ...      ...      ...                             ...      ...      ...      ...                             ...      ...      ...      ...                             ...      ...      ...      ...                            ...      ...      ...      ...                             ...      ...      ...      ...                             ...      ...      ...      ...                              ...      ...      ...      ...                              ...      ...      ...      ...                              ...      ...      ...      ...                             ...      ...      ...      ...                             ...      ...      ...      ...                             ...      ...      ...      ...                           ...      ...      ...      ...                           ...      ...      ...      ...                           ...      ...      ...      ...                   ...      ...      ...      ...                   ...      ...      ...      ...                   ...      ...      ...      ...
-    Dask Name: aggregate-agg, 75 tasks
+    Dask Name: aggregate-agg, 21 tasks
 
 </div>
 
@@ -706,13 +3241,17 @@ angelegt.
 
 </div>
 
-<div class="cell code" execution_count="49">
+<div class="cell code" execution_count="22">
 
-    dfeatures.visualize()
+``` python
+dfeatures.visualize()
+```
 
-<div class="output execute_result" execution_count="49">
+<div class="output execute_result" execution_count="22">
 
-![](d2dc16e0801e86db2a1138660f4d734a049303f2.png)
+![](images/bb2b574179a3f94c849a724bd3d03f51989c77df.png)
+
+    <IPython.core.display.Image object>
 
 </div>
 
@@ -726,12 +3265,1332 @@ sonst ist alles gleich)
 
 </div>
 
-<div class="cell code" execution_count="50">
+<div class="cell code" execution_count="23">
 
-    ddf=intake.open_csv(TRAIN_PATH+"006/{file_name}.csv").to_dask()
-    dfeatures=ddf.groupby(['file_name']).agg(["mean","var","min","max"])
+``` python
+ddf=dd.read_csv(TRAIN_PATH+"006/*.csv",include_path_column=True)
+dfeatures=ddf.groupby(['path']).agg(["mean","var","min","max"])
+```
 
-<div class="output execute_result" execution_count="50">
+<div class="output execute_result" execution_count="23">
+
+<div><strong>Dask DataFrame Structure:</strong></div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead tr th {
+        text-align: left;
+    }
+
+    .dataframe thead tr:last-of-type th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr>
+      <th></th>
+      <th colspan="4" halign="left">Wheel speed</th>
+      <th colspan="4" halign="left">hub angle</th>
+      <th colspan="4" halign="left">blade 1 angle</th>
+      <th colspan="4" halign="left">blade 2 angle</th>
+      <th colspan="4" halign="left">blade 3 angle</th>
+      <th colspan="4" halign="left">pitch motor 1 current</th>
+      <th colspan="4" halign="left">pitch motor 2 current</th>
+      <th colspan="4" halign="left">Pitch motor 3 current</th>
+      <th colspan="4" halign="left">overspeed sensor speed detection value</th>
+      <th colspan="4" halign="left">5 second yaw against wind average</th>
+      <th colspan="4" halign="left">x direction vibration value</th>
+      <th colspan="4" halign="left">y direction vibration value</th>
+      <th colspan="4" halign="left">hydraulic brake pressure</th>
+      <th colspan="4" halign="left">Aircraft weather station wind speed</th>
+      <th colspan="4" halign="left">wind direction absolute value</th>
+      <th colspan="4" halign="left">atmospheric pressure</th>
+      <th colspan="4" halign="left">reactive power control status</th>
+      <th colspan="4" halign="left">inverter grid side current</th>
+      <th colspan="4" halign="left">inverter grid side voltage</th>
+      <th colspan="4" halign="left">Inverter grid side active power</th>
+      <th colspan="4" halign="left">inverter grid side reactive power</th>
+      <th colspan="4" halign="left">inverter generator side power</th>
+      <th colspan="4" halign="left">generator operating frequency</th>
+      <th colspan="4" halign="left">generator current</th>
+      <th colspan="4" halign="left">generator torque</th>
+      <th colspan="4" halign="left">Inverter inlet temperature</th>
+      <th colspan="4" halign="left">inverter outlet temperature</th>
+      <th colspan="4" halign="left">inverter inlet pressure</th>
+      <th colspan="4" halign="left">inverter outlet pressure</th>
+      <th colspan="4" halign="left">generator power limit value</th>
+      <th colspan="4" halign="left">reactive power set value</th>
+      <th colspan="4" halign="left">Rated hub speed</th>
+      <th colspan="4" halign="left">wind tower ambient temperature</th>
+      <th colspan="4" halign="left">generator stator temperature 1</th>
+      <th colspan="4" halign="left">generator stator temperature 2</th>
+      <th colspan="4" halign="left">generator stator temperature 3</th>
+      <th colspan="4" halign="left">generator stator temperature 4</th>
+      <th colspan="4" halign="left">Generator stator temperature 5</th>
+      <th colspan="4" halign="left">generator stator temperature 6</th>
+      <th colspan="4" halign="left">generator air temperature 1</th>
+      <th colspan="4" halign="left">generator air temperature 2</th>
+      <th colspan="4" halign="left">main bearing temperature 1</th>
+      <th colspan="4" halign="left">main bearing temperature 2</th>
+      <th colspan="4" halign="left">Wheel temperature</th>
+      <th colspan="4" halign="left">Wheel control cabinet temperature</th>
+      <th colspan="4" halign="left">Cabin temperature</th>
+      <th colspan="4" halign="left">Cabin control cabinet temperature</th>
+      <th colspan="4" halign="left">Inverter INU temperature</th>
+      <th colspan="4" halign="left">Inverter ISU temperature</th>
+      <th colspan="4" halign="left">Inverter INU RMIO temperature</th>
+      <th colspan="4" halign="left">Pitch motor 1 power estimation</th>
+      <th colspan="4" halign="left">Pitch motor 2 power estimation</th>
+      <th colspan="4" halign="left">Pitch motor 3 power estimation</th>
+      <th colspan="4" halign="left">Fan current status value</th>
+      <th colspan="4" halign="left">hub current status value</th>
+      <th colspan="4" halign="left">yaw state value</th>
+      <th colspan="4" halign="left">yaw request value</th>
+      <th colspan="4" halign="left">blade 1 battery box temperature</th>
+      <th colspan="4" halign="left">blade 2 battery box temperature</th>
+      <th colspan="4" halign="left">blade 3 battery box temperature</th>
+      <th colspan="4" halign="left">vane 1 pitch motor temperature</th>
+      <th colspan="4" halign="left">blade 2 pitch motor temperature</th>
+      <th colspan="4" halign="left">blade 3 pitch motor temperature</th>
+      <th colspan="4" halign="left">blade 1 inverter box temperature</th>
+      <th colspan="4" halign="left">blade 2 inverter box temperature</th>
+      <th colspan="4" halign="left">blade 3 inverter box temperature</th>
+      <th colspan="4" halign="left">blade 1 super capacitor voltage</th>
+      <th colspan="4" halign="left">blade 2 super capacitor voltage</th>
+      <th colspan="4" halign="left">blade 3 super capacitor voltage</th>
+      <th colspan="4" halign="left">drive 1 thyristor temperature</th>
+      <th colspan="4" halign="left">Drive 2 thyristor temperature</th>
+      <th colspan="4" halign="left">Drive 3 thyristor temperature</th>
+      <th colspan="4" halign="left">Drive 1 output torque</th>
+      <th colspan="4" halign="left">Drive 2 output torque</th>
+      <th colspan="4" halign="left">Drive 3 output torque</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+    </tr>
+    <tr>
+      <th>npartitions=1</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th></th>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+      <td>float64</td>
+    </tr>
+    <tr>
+      <th></th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div>Dask Name: aggregate-agg, 2895 tasks</div>
 
     Dask DataFrame Structure:
                   Wheel speed                            hub angle                            blade 1 angle                            blade 2 angle                            blade 3 angle                            pitch motor 1 current                            pitch motor 2 current                            Pitch motor 3 current                            overspeed sensor speed detection value                            5 second yaw against wind average                            x direction vibration value                            y direction vibration value                            hydraulic brake pressure                            Aircraft weather station wind speed                            wind direction absolute value                            atmospheric pressure                            reactive power control status                            inverter grid side current                            inverter grid side voltage                            Inverter grid side active power                            inverter grid side reactive power                            inverter generator side power                            generator operating frequency                            generator current                            generator torque                            Inverter inlet temperature                            inverter outlet temperature                            inverter inlet pressure                            inverter outlet pressure                            generator power limit value                            reactive power set value                            Rated hub speed                            wind tower ambient temperature                            generator stator temperature 1                            generator stator temperature 2                            generator stator temperature 3                            generator stator temperature 4                            Generator stator temperature 5                            generator stator temperature 6                            generator air temperature 1                            generator air temperature 2                            main bearing temperature 1                            main bearing temperature 2                            Wheel temperature                            Wheel control cabinet temperature                            Cabin temperature                            Cabin control cabinet temperature                            Inverter INU temperature                            Inverter ISU temperature                            Inverter INU RMIO temperature                            Pitch motor 1 power estimation                            Pitch motor 2 power estimation                            Pitch motor 3 power estimation                            Fan current status value                            hub current status value                            yaw state value                            yaw request value                            blade 1 battery box temperature                            blade 2 battery box temperature                            blade 3 battery box temperature                            vane 1 pitch motor temperature                            blade 2 pitch motor temperature                            blade 3 pitch motor temperature                            blade 1 inverter box temperature                            blade 2 inverter box temperature                            blade 3 inverter box temperature                            blade 1 super capacitor voltage                            blade 2 super capacitor voltage                            blade 3 super capacitor voltage                            drive 1 thyristor temperature                            Drive 2 thyristor temperature                            Drive 3 thyristor temperature                            Drive 1 output torque                            Drive 2 output torque                            Drive 3 output torque                           
@@ -739,7 +4598,7 @@ sonst ist alles gleich)
     npartitions=1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
                       float64  float64  float64  float64   float64  float64  float64  float64       float64  float64  float64  float64       float64  float64  float64  float64       float64  float64  float64  float64               float64  float64  float64  float64               float64  float64  float64  float64               float64  float64  float64  float64                                float64  float64  float64  float64                           float64  float64  float64  float64                     float64  float64  float64  float64                     float64  float64  float64  float64                  float64  float64  float64  float64                             float64  float64  float64  float64                       float64  float64  float64  float64              float64  float64  float64  float64                       float64  float64  float64  float64                    float64  float64  float64  float64                    float64  float64  float64  float64                         float64  float64  float64  float64                           float64  float64  float64  float64                       float64  float64  float64  float64                       float64  float64  float64  float64           float64  float64  float64  float64          float64  float64  float64  float64                    float64  float64  float64  float64                     float64  float64  float64  float64                 float64  float64  float64  float64                  float64  float64  float64  float64                     float64  float64  float64  float64                  float64  float64  float64  float64         float64  float64  float64  float64                        float64  float64  float64  float64                        float64  float64  float64  float64                        float64  float64  float64  float64                        float64  float64  float64  float64                        float64  float64  float64  float64                        float64  float64  float64  float64                        float64  float64  float64  float64                     float64  float64  float64  float64                     float64  float64  float64  float64                    float64  float64  float64  float64                    float64  float64  float64  float64           float64  float64  float64  float64                           float64  float64  float64  float64           float64  float64  float64  float64                           float64  float64  float64  float64                  float64  float64  float64  float64                  float64  float64  float64  float64                       float64  float64  float64  float64                        float64  float64  float64  float64                        float64  float64  float64  float64                        float64  float64  float64  float64                  float64  float64  float64  float64                  float64  float64  float64  float64         float64  float64  float64  float64           float64  float64  float64  float64                         float64  float64  float64  float64                         float64  float64  float64  float64                         float64  float64  float64  float64                        float64  float64  float64  float64                         float64  float64  float64  float64                         float64  float64  float64  float64                          float64  float64  float64  float64                          float64  float64  float64  float64                          float64  float64  float64  float64                         float64  float64  float64  float64                         float64  float64  float64  float64                         float64  float64  float64  float64                       float64  float64  float64  float64                       float64  float64  float64  float64                       float64  float64  float64  float64               float64  float64  float64  float64               float64  float64  float64  float64               float64  float64  float64  float64
                           ...      ...      ...      ...       ...      ...      ...      ...           ...      ...      ...      ...           ...      ...      ...      ...           ...      ...      ...      ...                   ...      ...      ...      ...                   ...      ...      ...      ...                   ...      ...      ...      ...                                    ...      ...      ...      ...                               ...      ...      ...      ...                         ...      ...      ...      ...                         ...      ...      ...      ...                      ...      ...      ...      ...                                 ...      ...      ...      ...                           ...      ...      ...      ...                  ...      ...      ...      ...                           ...      ...      ...      ...                        ...      ...      ...      ...                        ...      ...      ...      ...                             ...      ...      ...      ...                               ...      ...      ...      ...                           ...      ...      ...      ...                           ...      ...      ...      ...               ...      ...      ...      ...              ...      ...      ...      ...                        ...      ...      ...      ...                         ...      ...      ...      ...                     ...      ...      ...      ...                      ...      ...      ...      ...                         ...      ...      ...      ...                      ...      ...      ...      ...             ...      ...      ...      ...                            ...      ...      ...      ...                            ...      ...      ...      ...                            ...      ...      ...      ...                            ...      ...      ...      ...                            ...      ...      ...      ...                            ...      ...      ...      ...                            ...      ...      ...      ...                         ...      ...      ...      ...                         ...      ...      ...      ...                        ...      ...      ...      ...                        ...      ...      ...      ...               ...      ...      ...      ...                               ...      ...      ...      ...               ...      ...      ...      ...                               ...      ...      ...      ...                      ...      ...      ...      ...                      ...      ...      ...      ...                           ...      ...      ...      ...                            ...      ...      ...      ...                            ...      ...      ...      ...                            ...      ...      ...      ...                      ...      ...      ...      ...                      ...      ...      ...      ...             ...      ...      ...      ...               ...      ...      ...      ...                             ...      ...      ...      ...                             ...      ...      ...      ...                             ...      ...      ...      ...                            ...      ...      ...      ...                             ...      ...      ...      ...                             ...      ...      ...      ...                              ...      ...      ...      ...                              ...      ...      ...      ...                              ...      ...      ...      ...                             ...      ...      ...      ...                             ...      ...      ...      ...                             ...      ...      ...      ...                           ...      ...      ...      ...                           ...      ...      ...      ...                           ...      ...      ...      ...                   ...      ...      ...      ...                   ...      ...      ...      ...                   ...      ...      ...      ...
-    Dask Name: aggregate-agg, 10995 tasks
+    Dask Name: aggregate-agg, 2895 tasks
 
 </div>
 
@@ -754,103 +4613,796 @@ Daten eingelesen werden und das Ergebnis stückweise aggregiert wird.
 
 </div>
 
-<div class="cell code" execution_count="51">
+<div class="cell code" execution_count="24">
 
-    features=dfeatures.compute()
+``` python
+features=dfeatures.compute()
+```
 
-<div class="output execute_result" execution_count="51">
+<div class="output execute_result" execution_count="24">
 
-                                         Wheel speed                         \
-                                                mean       var   min    max   
-    file_name                                                                 
-    666a6cf9-924c-3de9-9ef5-2fbef5ca41b0    7.221927  0.003140  7.08   7.34   
-    ac9e5e3c-7be8-32e1-a8ed-18b514deb246    7.148732  0.246737  0.00   7.24   
-    e5ec578b-c5a5-3088-98f4-41264ce17859   15.752705  1.947185  0.00  16.64   
-    5785bd44-21f4-3585-9b29-ba309115bd2c   12.611022  1.368645  9.30  14.22   
-    2fe6f0a0-4757-3ae4-b4a0-103493d789cf    0.003147  0.000106 -0.01   0.06   
-    ...                                          ...       ...   ...    ...   
-    6ce64374-827a-30dd-b5b7-007a1f350ac3    8.777699  0.815149  7.29  10.65   
-    8bdb9313-a6c3-3cf7-9bbd-950f361bcb74    7.973862  0.413934  0.00   9.03   
-    7f690922-03a0-3eda-9bde-4314c51e04d5   11.124664  0.795493  0.00  12.35   
-    3d298e6b-3222-3370-a415-3c62e7112ab8    7.694931  0.220036  0.00   8.67   
-    3f6796ae-89fe-3a7e-8de1-2f23ba82232e    5.572020  1.401133  0.00   6.64   
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
-                                           hub angle                             \
-                                                mean           var  min     max   
-    file_name                                                                     
-    666a6cf9-924c-3de9-9ef5-2fbef5ca41b0  176.558617  10629.140008  0.0  357.98   
-    ac9e5e3c-7be8-32e1-a8ed-18b514deb246  176.455789  11167.986582  0.0  359.75   
-    e5ec578b-c5a5-3088-98f4-41264ce17859  180.718159  11216.768807  0.0  358.24   
-    5785bd44-21f4-3585-9b29-ba309115bd2c  179.609667  10539.434344  0.0  359.50   
-    2fe6f0a0-4757-3ae4-b4a0-103493d789cf  160.508462    139.041954  0.0  165.49   
-    ...                                          ...           ...  ...     ...   
-    6ce64374-827a-30dd-b5b7-007a1f350ac3  175.320774  11069.534996  0.0  357.98   
-    8bdb9313-a6c3-3cf7-9bbd-950f361bcb74  180.106920  10816.378567  0.0  360.00   
-    7f690922-03a0-3eda-9bde-4314c51e04d5  176.797444  10679.227688  0.0  357.98   
-    3d298e6b-3222-3370-a415-3c62e7112ab8  176.339128  10876.806797  0.0  357.98   
-    3f6796ae-89fe-3a7e-8de1-2f23ba82232e  174.478384  11259.222959  0.0  360.00   
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
 
-                                         blade 1 angle              ...  \
-                                                  mean         var  ...   
-    file_name                                                       ...   
-    666a6cf9-924c-3de9-9ef5-2fbef5ca41b0      0.279252    0.000007  ...   
-    ac9e5e3c-7be8-32e1-a8ed-18b514deb246      0.218947    0.000231  ...   
-    e5ec578b-c5a5-3088-98f4-41264ce17859      0.381409    0.001831  ...   
-    5785bd44-21f4-3585-9b29-ba309115bd2c      0.367378    0.000019  ...   
-    2fe6f0a0-4757-3ae4-b4a0-103493d789cf     85.599068   34.399625  ...   
-    ...                                            ...         ...  ...   
-    6ce64374-827a-30dd-b5b7-007a1f350ac3      0.246082    0.000024  ...   
-    8bdb9313-a6c3-3cf7-9bbd-950f361bcb74      0.244152    0.000159  ...   
-    7f690922-03a0-3eda-9bde-4314c51e04d5      0.219013    0.000217  ...   
-    3d298e6b-3222-3370-a415-3c62e7112ab8      0.243532    0.000161  ...   
-    3f6796ae-89fe-3a7e-8de1-2f23ba82232e      2.893502  138.610708  ...   
+    .dataframe thead tr th {
+        text-align: left;
+    }
 
-                                         Drive 1 output torque       \
-                                                           min  max   
-    file_name                                                         
-    666a6cf9-924c-3de9-9ef5-2fbef5ca41b0                   0.0  0.0   
-    ac9e5e3c-7be8-32e1-a8ed-18b514deb246                   0.0  0.0   
-    e5ec578b-c5a5-3088-98f4-41264ce17859                   0.0  0.0   
-    5785bd44-21f4-3585-9b29-ba309115bd2c                   0.0  0.0   
-    2fe6f0a0-4757-3ae4-b4a0-103493d789cf                   0.0  0.0   
-    ...                                                    ...  ...   
-    6ce64374-827a-30dd-b5b7-007a1f350ac3                   0.0  0.0   
-    8bdb9313-a6c3-3cf7-9bbd-950f361bcb74                   0.0  0.0   
-    7f690922-03a0-3eda-9bde-4314c51e04d5                   0.0  0.0   
-    3d298e6b-3222-3370-a415-3c62e7112ab8                   0.0  0.0   
-    3f6796ae-89fe-3a7e-8de1-2f23ba82232e                   0.0  0.0   
+    .dataframe thead tr:last-of-type th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr>
+      <th></th>
+      <th colspan="4" halign="left">Wheel speed</th>
+      <th colspan="4" halign="left">hub angle</th>
+      <th colspan="2" halign="left">blade 1 angle</th>
+      <th>...</th>
+      <th colspan="2" halign="left">Drive 1 output torque</th>
+      <th colspan="4" halign="left">Drive 2 output torque</th>
+      <th colspan="4" halign="left">Drive 3 output torque</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>...</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>var</th>
+      <th>min</th>
+      <th>max</th>
+    </tr>
+    <tr>
+      <th>path</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>/gpfs/smartdata/iu5681/src/Parallel_computing/data/train/006/00273039-d989-3811-a90c-3ea5281a863d.csv</th>
+      <td>11.652135</td>
+      <td>0.995131</td>
+      <td>0.00</td>
+      <td>12.23</td>
+      <td>175.732668</td>
+      <td>11396.391191</td>
+      <td>0.00</td>
+      <td>357.01</td>
+      <td>0.248260</td>
+      <td>4.330114e-04</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>/gpfs/smartdata/iu5681/src/Parallel_computing/data/train/006/004539e0-0349-3410-8603-3d7e3918975e.csv</th>
+      <td>7.316793</td>
+      <td>0.121421</td>
+      <td>0.00</td>
+      <td>7.47</td>
+      <td>179.592517</td>
+      <td>10355.845285</td>
+      <td>0.00</td>
+      <td>360.00</td>
+      <td>0.267996</td>
+      <td>1.727589e-04</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>/gpfs/smartdata/iu5681/src/Parallel_computing/data/train/006/00a233ba-2567-3f7e-9aeb-9b599de7d9f1.csv</th>
+      <td>14.688076</td>
+      <td>1.125021</td>
+      <td>0.00</td>
+      <td>15.35</td>
+      <td>179.179799</td>
+      <td>10784.273071</td>
+      <td>0.00</td>
+      <td>359.75</td>
+      <td>0.238926</td>
+      <td>2.571403e-04</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>/gpfs/smartdata/iu5681/src/Parallel_computing/data/train/006/00ddf709-bb2e-3444-88b7-61dc04b3bf13.csv</th>
+      <td>10.150067</td>
+      <td>1.033120</td>
+      <td>7.99</td>
+      <td>12.18</td>
+      <td>184.451317</td>
+      <td>10813.880820</td>
+      <td>0.00</td>
+      <td>357.98</td>
+      <td>4.434978</td>
+      <td>1.894467e+01</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>/gpfs/smartdata/iu5681/src/Parallel_computing/data/train/006/015d4b9f-77c5-340d-bd57-024fb53f3480.csv</th>
+      <td>7.151622</td>
+      <td>0.003039</td>
+      <td>7.02</td>
+      <td>7.26</td>
+      <td>180.776289</td>
+      <td>10975.712335</td>
+      <td>1.01</td>
+      <td>360.00</td>
+      <td>0.266978</td>
+      <td>2.113536e-05</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>/gpfs/smartdata/iu5681/src/Parallel_computing/data/train/006/ff37d10d-bca3-37e9-8f5b-9c6abf77b862.csv</th>
+      <td>1.312825</td>
+      <td>6.887868</td>
+      <td>-0.05</td>
+      <td>7.02</td>
+      <td>77.193371</td>
+      <td>7435.980567</td>
+      <td>0.00</td>
+      <td>357.98</td>
+      <td>70.065740</td>
+      <td>1.047322e+03</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>/gpfs/smartdata/iu5681/src/Parallel_computing/data/train/006/ff4dbb6a-b846-3914-b6f8-031d498e3be6.csv</th>
+      <td>7.355244</td>
+      <td>0.008396</td>
+      <td>7.13</td>
+      <td>7.64</td>
+      <td>179.541178</td>
+      <td>10948.732273</td>
+      <td>0.25</td>
+      <td>359.75</td>
+      <td>0.265311</td>
+      <td>2.495867e-05</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>/gpfs/smartdata/iu5681/src/Parallel_computing/data/train/006/ff56b7ba-9fc2-306d-8d6e-fd75c31079da.csv</th>
+      <td>6.825356</td>
+      <td>0.590923</td>
+      <td>4.80</td>
+      <td>7.83</td>
+      <td>175.144556</td>
+      <td>10654.435697</td>
+      <td>0.00</td>
+      <td>359.24</td>
+      <td>0.269600</td>
+      <td>3.848552e-06</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>/gpfs/smartdata/iu5681/src/Parallel_computing/data/train/006/ff9791d0-aec7-3271-a2d6-942457e42f91.csv</th>
+      <td>8.051719</td>
+      <td>0.869359</td>
+      <td>0.00</td>
+      <td>9.93</td>
+      <td>176.688996</td>
+      <td>11072.518108</td>
+      <td>0.00</td>
+      <td>358.49</td>
+      <td>0.358393</td>
+      <td>5.772771e-04</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>/gpfs/smartdata/iu5681/src/Parallel_computing/data/train/006/ffff4a7c-ee26-3517-94f6-6e1734348276.csv</th>
+      <td>7.366778</td>
+      <td>0.002350</td>
+      <td>7.20</td>
+      <td>7.47</td>
+      <td>179.519911</td>
+      <td>10488.953408</td>
+      <td>2.02</td>
+      <td>360.00</td>
+      <td>0.270000</td>
+      <td>9.811503e-16</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>1350 rows × 300 columns</p>
+</div>
 
-                                         Drive 2 output torque                 \
-                                                          mean  var  min  max   
-    file_name                                                                   
-    666a6cf9-924c-3de9-9ef5-2fbef5ca41b0                   0.0  0.0  0.0  0.0   
-    ac9e5e3c-7be8-32e1-a8ed-18b514deb246                   0.0  0.0  0.0  0.0   
-    e5ec578b-c5a5-3088-98f4-41264ce17859                   0.0  0.0  0.0  0.0   
-    5785bd44-21f4-3585-9b29-ba309115bd2c                   0.0  0.0  0.0  0.0   
-    2fe6f0a0-4757-3ae4-b4a0-103493d789cf                   0.0  0.0  0.0  0.0   
-    ...                                                    ...  ...  ...  ...   
-    6ce64374-827a-30dd-b5b7-007a1f350ac3                   0.0  0.0  0.0  0.0   
-    8bdb9313-a6c3-3cf7-9bbd-950f361bcb74                   0.0  0.0  0.0  0.0   
-    7f690922-03a0-3eda-9bde-4314c51e04d5                   0.0  0.0  0.0  0.0   
-    3d298e6b-3222-3370-a415-3c62e7112ab8                   0.0  0.0  0.0  0.0   
-    3f6796ae-89fe-3a7e-8de1-2f23ba82232e                   0.0  0.0  0.0  0.0   
+                                                       Wheel speed            \
+                                                              mean       var   
+    path                                                                       
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...   11.652135  0.995131   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...    7.316793  0.121421   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...   14.688076  1.125021   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...   10.150067  1.033120   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...    7.151622  0.003039   
+    ...                                                        ...       ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...    1.312825  6.887868   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...    7.355244  0.008396   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...    6.825356  0.590923   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...    8.051719  0.869359   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...    7.366778  0.002350   
 
-                                         Drive 3 output torque                 
-                                                          mean  var  min  max  
-    file_name                                                                  
-    666a6cf9-924c-3de9-9ef5-2fbef5ca41b0                   0.0  0.0  0.0  0.0  
-    ac9e5e3c-7be8-32e1-a8ed-18b514deb246                   0.0  0.0  0.0  0.0  
-    e5ec578b-c5a5-3088-98f4-41264ce17859                   0.0  0.0  0.0  0.0  
-    5785bd44-21f4-3585-9b29-ba309115bd2c                   0.0  0.0  0.0  0.0  
-    2fe6f0a0-4757-3ae4-b4a0-103493d789cf                   0.0  0.0  0.0  0.0  
-    ...                                                    ...  ...  ...  ...  
-    6ce64374-827a-30dd-b5b7-007a1f350ac3                   0.0  0.0  0.0  0.0  
-    8bdb9313-a6c3-3cf7-9bbd-950f361bcb74                   0.0  0.0  0.0  0.0  
-    7f690922-03a0-3eda-9bde-4314c51e04d5                   0.0  0.0  0.0  0.0  
-    3d298e6b-3222-3370-a415-3c62e7112ab8                   0.0  0.0  0.0  0.0  
-    3f6796ae-89fe-3a7e-8de1-2f23ba82232e                   0.0  0.0  0.0  0.0  
+                                                                      hub angle  \
+                                                         min    max        mean   
+    path                                                                          
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.00  12.23  175.732668   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.00   7.47  179.592517   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.00  15.35  179.179799   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  7.99  12.18  184.451317   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  7.02   7.26  180.776289   
+    ...                                                  ...    ...         ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d... -0.05   7.02   77.193371   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  7.13   7.64  179.541178   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  4.80   7.83  175.144556   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.00   9.93  176.688996   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  7.20   7.47  179.519911   
+
+                                                                            \
+                                                                 var   min   
+    path                                                                     
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  11396.391191  0.00   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  10355.845285  0.00   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  10784.273071  0.00   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  10813.880820  0.00   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  10975.712335  1.01   
+    ...                                                          ...   ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...   7435.980567  0.00   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  10948.732273  0.25   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  10654.435697  0.00   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  11072.518108  0.00   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  10488.953408  2.02   
+
+                                                               blade 1 angle  \
+                                                           max          mean   
+    path                                                                       
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  357.01      0.248260   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  360.00      0.267996   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  359.75      0.238926   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  357.98      4.434978   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  360.00      0.266978   
+    ...                                                    ...           ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  357.98     70.065740   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  359.75      0.265311   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  359.24      0.269600   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  358.49      0.358393   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  360.00      0.270000   
+
+                                                                      ...  \
+                                                                 var  ...   
+    path                                                              ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  4.330114e-04  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  1.727589e-04  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  2.571403e-04  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  1.894467e+01  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  2.113536e-05  ...   
+    ...                                                          ...  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  1.047322e+03  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  2.495867e-05  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  3.848552e-06  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  5.772771e-04  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  9.811503e-16  ...   
+
+                                                       Drive 1 output torque       \
+                                                                         min  max   
+    path                                                                            
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    ...                                                                  ...  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+
+                                                       Drive 2 output torque       \
+                                                                        mean  var   
+    path                                                                            
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    ...                                                                  ...  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+
+                                                                  \
+                                                        min  max   
+    path                                                           
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.0  0.0   
+    ...                                                 ...  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.0  0.0   
+
+                                                       Drive 3 output torque       \
+                                                                        mean  var   
+    path                                                                            
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    ...                                                                  ...  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                   0.0  0.0   
+
+                                                                  
+                                                        min  max  
+    path                                                          
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.0  0.0  
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.0  0.0  
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.0  0.0  
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.0  0.0  
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.0  0.0  
+    ...                                                 ...  ...  
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.0  0.0  
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.0  0.0  
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.0  0.0  
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.0  0.0  
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...  0.0  0.0  
 
     [1350 rows x 300 columns]
+
+</div>
+
+</div>
+
+<div class="cell markdown">
+
+Weil dask die Dateien nach und nach einliest, kann es auch zu Problemen
+bei der automatischen Erkennung der Spaltentypen kommen:
+
+</div>
+
+<div class="cell code" execution_count="25">
+
+``` python
+try: 
+    features=dd.read_csv(TRAIN_PATH+"095/*.csv",include_path_column=True).\
+            groupby(['path']).\
+            agg(["mean","var","min","max"]).\
+            compute()
+except ValueError as e:
+    print(e)
+```
+
+<div class="output stream stdout">
+
+    Mismatched dtypes found in `pd.read_csv`/`pd.read_table`.
+
+    +-----------------------------------+---------+----------+
+    | Column                            | Found   | Expected |
+    +-----------------------------------+---------+----------+
+    | Drive 1 output torque             | float64 | int64    |
+    | Drive 2 output torque             | float64 | int64    |
+    | Drive 2 thyristor temperature     | float64 | int64    |
+    | Drive 3 output torque             | float64 | int64    |
+    | Fan current status value          | float64 | int64    |
+    | Inverter INU RMIO temperature     | float64 | int64    |
+    | Inverter INU temperature          | float64 | int64    |
+    | Inverter ISU temperature          | float64 | int64    |
+    | Inverter grid side active power   | float64 | int64    |
+    | Pitch motor 1 power estimation    | float64 | int64    |
+    | Pitch motor 2 power estimation    | float64 | int64    |
+    | Pitch motor 3 current             | float64 | int64    |
+    | Pitch motor 3 power estimation    | float64 | int64    |
+    | Rated hub speed                   | float64 | int64    |
+    | Wheel control cabinet temperature | float64 | int64    |
+    | Wheel temperature                 | float64 | int64    |
+    | atmospheric pressure              | float64 | int64    |
+    | blade 1 battery box temperature   | float64 | int64    |
+    | blade 1 inverter box temperature  | float64 | int64    |
+    | blade 2 battery box temperature   | float64 | int64    |
+    | blade 2 inverter box temperature  | float64 | int64    |
+    | blade 2 pitch motor temperature   | float64 | int64    |
+    | blade 3 battery box temperature   | float64 | int64    |
+    | blade 3 inverter box temperature  | float64 | int64    |
+    | blade 3 pitch motor temperature   | float64 | int64    |
+    | drive 1 thyristor temperature     | float64 | int64    |
+    | generator power limit value       | float64 | int64    |
+    | generator torque                  | float64 | int64    |
+    | hub angle                         | float64 | int64    |
+    | hub current status value          | float64 | int64    |
+    | inverter generator side power     | float64 | int64    |
+    | inverter grid side current        | float64 | int64    |
+    | inverter grid side reactive power | float64 | int64    |
+    | inverter grid side voltage        | float64 | int64    |
+    | pitch motor 1 current             | float64 | int64    |
+    | pitch motor 2 current             | float64 | int64    |
+    | reactive power control status     | float64 | int64    |
+    | reactive power set value          | float64 | int64    |
+    | vane 1 pitch motor temperature    | float64 | int64    |
+    | wind direction absolute value     | float64 | int64    |
+    | yaw request value                 | float64 | int64    |
+    | yaw state value                   | float64 | int64    |
+    +-----------------------------------+---------+----------+
+
+    Usually this is due to dask's dtype inference failing, and
+    *may* be fixed by specifying dtypes manually by adding:
+
+    dtype={'Drive 1 output torque': 'float64',
+           'Drive 2 output torque': 'float64',
+           'Drive 2 thyristor temperature': 'float64',
+           'Drive 3 output torque': 'float64',
+           'Fan current status value': 'float64',
+           'Inverter INU RMIO temperature': 'float64',
+           'Inverter INU temperature': 'float64',
+           'Inverter ISU temperature': 'float64',
+           'Inverter grid side active power': 'float64',
+           'Pitch motor 1 power estimation': 'float64',
+           'Pitch motor 2 power estimation': 'float64',
+           'Pitch motor 3 current': 'float64',
+           'Pitch motor 3 power estimation': 'float64',
+           'Rated hub speed': 'float64',
+           'Wheel control cabinet temperature': 'float64',
+           'Wheel temperature': 'float64',
+           'atmospheric pressure': 'float64',
+           'blade 1 battery box temperature': 'float64',
+           'blade 1 inverter box temperature': 'float64',
+           'blade 2 battery box temperature': 'float64',
+           'blade 2 inverter box temperature': 'float64',
+           'blade 2 pitch motor temperature': 'float64',
+           'blade 3 battery box temperature': 'float64',
+           'blade 3 inverter box temperature': 'float64',
+           'blade 3 pitch motor temperature': 'float64',
+           'drive 1 thyristor temperature': 'float64',
+           'generator power limit value': 'float64',
+           'generator torque': 'float64',
+           'hub angle': 'float64',
+           'hub current status value': 'float64',
+           'inverter generator side power': 'float64',
+           'inverter grid side current': 'float64',
+           'inverter grid side reactive power': 'float64',
+           'inverter grid side voltage': 'float64',
+           'pitch motor 1 current': 'float64',
+           'pitch motor 2 current': 'float64',
+           'reactive power control status': 'float64',
+           'reactive power set value': 'float64',
+           'vane 1 pitch motor temperature': 'float64',
+           'wind direction absolute value': 'float64',
+           'yaw request value': 'float64',
+           'yaw state value': 'float64'}
+
+    to the call to `read_csv`/`read_table`.
+
+    Alternatively, provide `assume_missing=True` to interpret
+    all unspecified integer columns as floats.
+
+</div>
+
+</div>
+
+<div class="cell markdown">
+
+Hier hilft es die Typen manuell zu setzen (wir nutzen der Einfachheit
+halber einfach immer Fließkommazahlen).
+
+</div>
+
+<div class="cell code" execution_count="26">
+
+``` python
+%time features=dd.read_csv(TRAIN_PATH+"095/*.csv",include_path_column=True, dtype='float64').\
+            groupby(['path']).\
+            agg(["mean","var","min","max"])
+%time features=features.persist()
+```
+
+<div class="output stream stdout">
+
+    CPU times: user 2.56 s, sys: 568 ms, total: 3.12 s
+    Wall time: 2.98 s
+    CPU times: user 31 s, sys: 686 ms, total: 31.7 s
+    Wall time: 31.5 s
+
+</div>
+
+</div>
+
+<div class="cell code" execution_count="27">
+
+``` python
+progress(features)
+```
+
+<div class="output display_data">
+
+``` json
+{"model_id":"81f25856fedc45c29fe355a3db5d95d5","version_major":2,"version_minor":0}
+```
+
+    VBox()
+
+</div>
+
+</div>
+
+<div class="cell markdown">
+
+`persist` belässt im Gegensatz zu `compute` das Berechnungsergebnis im
+Cluster und ist asyncron. Die erste Zeit ist die Zeit die es braucht den
+Graphen aufzubauen. Die zweite Zeit ist die Zeit, die es brauch den Task
+an den Cluster zu schicken.
+
+</div>
+
+<div class="cell code" execution_count="33">
+
+``` python
+from dask.distributed import wait
+wait(features, timeout=30)
+client.cancel(features)
+```
+
+</div>
+
+<div class="cell markdown">
+
+Leider skaliert der Daskgraph hier mit der Anzahl der Dateien. Man
+beachte, dass hier gar nichts berechnet wird sondern nur der Graph lokal
+aufgebaut wird. Entsprechend lange dauert auch die Berechnung auf dem
+Cluster zu starten (währenddessen tut der Scheduler gar nichts). Am
+besten nicht auskommentieren: 16GB Speicher reichen nicht... 🙂
+
+</div>
+
+<div class="cell code" execution_count="37">
+
+``` python
+%time features=dd.read_csv(TRAIN_PATH+"*/*.csv",include_path_column=True, dtype='float64').\
+            groupby(['path']).\
+            agg(["mean","var","min","max"])
+#%time features=features.persist()
+```
+
+<div class="output stream stdout">
+
+    CPU times: user 58.5 s, sys: 8.8 s, total: 1min 7s
+    Wall time: 1min 6s
+
+</div>
+
+</div>
+
+<div class="cell code" execution_count="38">
+
+``` python
+#progress(features)
+```
+
+</div>
+
+<div class="cell code" execution_count="39">
+
+``` python
+#from dask.distributed import wait
+#wait(features, timeout=30)
+#client.cancel(features)
+```
+
+</div>
+
+<div class="cell markdown">
+
+Alternativ kann man in diesem Fall klassisches map-reduce mit unserer
+Funktion `get_features` von oben benutzen. Das hält den Graphen
+überschaubar klein.
+
+</div>
+
+<div class="cell code" execution_count="44">
+
+``` python
+import dask.bag as db
+
+%time features=db.from_sequence(files).map(get_features).\
+reduction(pd.concat,pd.concat)
+%time features=features.persist()
+```
+
+<div class="output stream stdout">
+
+    CPU times: user 83.7 ms, sys: 6.03 ms, total: 89.8 ms
+    Wall time: 88.6 ms
+    CPU times: user 111 ms, sys: 2.99 ms, total: 114 ms
+    Wall time: 114 ms
+
+</div>
+
+</div>
+
+<div class="cell code" execution_count="45">
+
+``` python
+progress(features)
+```
+
+<div class="output display_data">
+
+``` json
+{"model_id":"b23b663940104f74a977dd9f9554b476","version_major":2,"version_minor":0}
+```
+
+    VBox()
 
 </div>
 
@@ -864,227 +5416,633 @@ den Datensatz an und entfernen die Ids sowie evtl. Nulleinträge.
 
 </div>
 
-<div class="cell code" execution_count="54">
+<div class="cell code" execution_count="46">
 
-    train=features.join(
-        label.set_index(
-            label["file_name"].str.replace('.csv','')
-        )
-    ).drop(['file_name','f_id'],axis=1).dropna()
+``` python
+features=features.compute()
+train=features.join(
+    label.set_index(files)
+).drop(['file_name','f_id'],axis=1).dropna()
+```
 
-<div class="output execute_result" execution_count="54">
+<div class="output execute_result" execution_count="46">
 
-                                          (Wheel speed, mean)  (Wheel speed, var)  \
-    file_name                                                                       
-    666a6cf9-924c-3de9-9ef5-2fbef5ca41b0             7.221927            0.003140   
-    ac9e5e3c-7be8-32e1-a8ed-18b514deb246             7.148732            0.246737   
-    e5ec578b-c5a5-3088-98f4-41264ce17859            15.752705            1.947185   
-    5785bd44-21f4-3585-9b29-ba309115bd2c            12.611022            1.368645   
-    2fe6f0a0-4757-3ae4-b4a0-103493d789cf             0.003147            0.000106   
-    ...                                                   ...                 ...   
-    6ce64374-827a-30dd-b5b7-007a1f350ac3             8.777699            0.815149   
-    8bdb9313-a6c3-3cf7-9bbd-950f361bcb74             7.973862            0.413934   
-    7f690922-03a0-3eda-9bde-4314c51e04d5            11.124664            0.795493   
-    3d298e6b-3222-3370-a415-3c62e7112ab8             7.694931            0.220036   
-    3f6796ae-89fe-3a7e-8de1-2f23ba82232e             5.572020            1.401133   
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
-                                          (Wheel speed, min)  (Wheel speed, max)  \
-    file_name                                                                      
-    666a6cf9-924c-3de9-9ef5-2fbef5ca41b0                7.08                7.34   
-    ac9e5e3c-7be8-32e1-a8ed-18b514deb246                0.00                7.24   
-    e5ec578b-c5a5-3088-98f4-41264ce17859                0.00               16.64   
-    5785bd44-21f4-3585-9b29-ba309115bd2c                9.30               14.22   
-    2fe6f0a0-4757-3ae4-b4a0-103493d789cf               -0.01                0.06   
-    ...                                                  ...                 ...   
-    6ce64374-827a-30dd-b5b7-007a1f350ac3                7.29               10.65   
-    8bdb9313-a6c3-3cf7-9bbd-950f361bcb74                0.00                9.03   
-    7f690922-03a0-3eda-9bde-4314c51e04d5                0.00               12.35   
-    3d298e6b-3222-3370-a415-3c62e7112ab8                0.00                8.67   
-    3f6796ae-89fe-3a7e-8de1-2f23ba82232e                0.00                6.64   
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
 
-                                          (hub angle, mean)  (hub angle, var)  \
-    file_name                                                                   
-    666a6cf9-924c-3de9-9ef5-2fbef5ca41b0         176.558617      10629.140008   
-    ac9e5e3c-7be8-32e1-a8ed-18b514deb246         176.455789      11167.986582   
-    e5ec578b-c5a5-3088-98f4-41264ce17859         180.718159      11216.768807   
-    5785bd44-21f4-3585-9b29-ba309115bd2c         179.609667      10539.434344   
-    2fe6f0a0-4757-3ae4-b4a0-103493d789cf         160.508462        139.041954   
-    ...                                                 ...               ...   
-    6ce64374-827a-30dd-b5b7-007a1f350ac3         175.320774      11069.534996   
-    8bdb9313-a6c3-3cf7-9bbd-950f361bcb74         180.106920      10816.378567   
-    7f690922-03a0-3eda-9bde-4314c51e04d5         176.797444      10679.227688   
-    3d298e6b-3222-3370-a415-3c62e7112ab8         176.339128      10876.806797   
-    3f6796ae-89fe-3a7e-8de1-2f23ba82232e         174.478384      11259.222959   
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>(Wheel speed, mean)</th>
+      <th>(Wheel speed, var)</th>
+      <th>(Wheel speed, min)</th>
+      <th>(Wheel speed, max)</th>
+      <th>(hub angle, mean)</th>
+      <th>(hub angle, var)</th>
+      <th>(hub angle, min)</th>
+      <th>(hub angle, max)</th>
+      <th>(blade 1 angle, mean)</th>
+      <th>(blade 1 angle, var)</th>
+      <th>...</th>
+      <th>(Drive 1 output torque, max)</th>
+      <th>(Drive 2 output torque, mean)</th>
+      <th>(Drive 2 output torque, var)</th>
+      <th>(Drive 2 output torque, min)</th>
+      <th>(Drive 2 output torque, max)</th>
+      <th>(Drive 3 output torque, mean)</th>
+      <th>(Drive 3 output torque, var)</th>
+      <th>(Drive 3 output torque, min)</th>
+      <th>(Drive 3 output torque, max)</th>
+      <th>ret</th>
+    </tr>
+    <tr>
+      <th>path</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>/gpfs/smartdata/iu5681/src/Parallel_computing/data/train/095/dba63ee5-6603-300e-8071-8536afcbc2de.csv</th>
+      <td>13.394722</td>
+      <td>0.498932</td>
+      <td>0.00</td>
+      <td>14.14</td>
+      <td>172.347439</td>
+      <td>10709.343303</td>
+      <td>0.00</td>
+      <td>356.00</td>
+      <td>0.259421</td>
+      <td>0.000151</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>/gpfs/smartdata/iu5681/src/Parallel_computing/data/train/095/0b8bfa51-cf28-35d0-94d2-7922f45120b2.csv</th>
+      <td>14.962244</td>
+      <td>0.079155</td>
+      <td>14.32</td>
+      <td>15.51</td>
+      <td>174.595556</td>
+      <td>10632.927374</td>
+      <td>0.00</td>
+      <td>356.00</td>
+      <td>0.260000</td>
+      <td>0.000000</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>/gpfs/smartdata/iu5681/src/Parallel_computing/data/train/095/d7a64eee-165e-3d39-be67-adc82050bde3.csv</th>
+      <td>15.089200</td>
+      <td>0.287379</td>
+      <td>13.41</td>
+      <td>15.86</td>
+      <td>176.764444</td>
+      <td>10886.184925</td>
+      <td>0.00</td>
+      <td>356.00</td>
+      <td>0.260000</td>
+      <td>0.000000</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>/gpfs/smartdata/iu5681/src/Parallel_computing/data/train/095/4da3314d-c5b0-3782-bdd6-27fb9e251261.csv</th>
+      <td>13.077089</td>
+      <td>0.221067</td>
+      <td>11.87</td>
+      <td>14.15</td>
+      <td>170.177778</td>
+      <td>10579.442712</td>
+      <td>0.00</td>
+      <td>356.00</td>
+      <td>0.260000</td>
+      <td>0.000000</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>/gpfs/smartdata/iu5681/src/Parallel_computing/data/train/095/7d58a65f-af5a-3433-bcbb-a342b9468b71.csv</th>
+      <td>16.138867</td>
+      <td>0.037577</td>
+      <td>15.73</td>
+      <td>16.59</td>
+      <td>179.893333</td>
+      <td>10386.946281</td>
+      <td>0.00</td>
+      <td>356.00</td>
+      <td>0.261156</td>
+      <td>0.000574</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>/gpfs/smartdata/iu5681/src/Parallel_computing/data/train/011/d6e19de9-22a8-39e6-98c1-cc599c819a56.csv</th>
+      <td>0.066200</td>
+      <td>0.009512</td>
+      <td>-0.19</td>
+      <td>0.31</td>
+      <td>161.388044</td>
+      <td>11954.801024</td>
+      <td>0.50</td>
+      <td>359.64</td>
+      <td>92.240000</td>
+      <td>0.000000</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>/gpfs/smartdata/iu5681/src/Parallel_computing/data/train/011/83895667-dc4e-303a-90e7-7dfc0725f476.csv</th>
+      <td>0.055000</td>
+      <td>0.004598</td>
+      <td>-0.14</td>
+      <td>0.22</td>
+      <td>191.891689</td>
+      <td>3728.019529</td>
+      <td>109.87</td>
+      <td>304.74</td>
+      <td>92.240000</td>
+      <td>0.000000</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>/gpfs/smartdata/iu5681/src/Parallel_computing/data/train/011/a6ab9f83-4bea-323f-b08e-4a9fb4eab8d6.csv</th>
+      <td>0.008853</td>
+      <td>0.006387</td>
+      <td>-0.25</td>
+      <td>0.22</td>
+      <td>333.971078</td>
+      <td>430.780434</td>
+      <td>0.00</td>
+      <td>355.14</td>
+      <td>92.028440</td>
+      <td>19.514261</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>/gpfs/smartdata/iu5681/src/Parallel_computing/data/train/011/a19af894-a9c8-3127-87e4-39567f0a9e0c.csv</th>
+      <td>0.008089</td>
+      <td>0.004167</td>
+      <td>-0.15</td>
+      <td>0.19</td>
+      <td>200.854242</td>
+      <td>404.828171</td>
+      <td>0.00</td>
+      <td>218.63</td>
+      <td>91.594965</td>
+      <td>59.219997</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>/gpfs/smartdata/iu5681/src/Parallel_computing/data/train/011/861ce6ba-f676-3ea6-bfbb-16dfda24ac1a.csv</th>
+      <td>0.000756</td>
+      <td>0.002392</td>
+      <td>-0.17</td>
+      <td>0.14</td>
+      <td>215.658711</td>
+      <td>46.816874</td>
+      <td>202.25</td>
+      <td>228.74</td>
+      <td>92.240000</td>
+      <td>0.000000</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+<p>48339 rows × 301 columns</p>
+</div>
 
-                                          (hub angle, min)  (hub angle, max)  \
-    file_name                                                                  
-    666a6cf9-924c-3de9-9ef5-2fbef5ca41b0               0.0            357.98   
-    ac9e5e3c-7be8-32e1-a8ed-18b514deb246               0.0            359.75   
-    e5ec578b-c5a5-3088-98f4-41264ce17859               0.0            358.24   
-    5785bd44-21f4-3585-9b29-ba309115bd2c               0.0            359.50   
-    2fe6f0a0-4757-3ae4-b4a0-103493d789cf               0.0            165.49   
-    ...                                                ...               ...   
-    6ce64374-827a-30dd-b5b7-007a1f350ac3               0.0            357.98   
-    8bdb9313-a6c3-3cf7-9bbd-950f361bcb74               0.0            360.00   
-    7f690922-03a0-3eda-9bde-4314c51e04d5               0.0            357.98   
-    3d298e6b-3222-3370-a415-3c62e7112ab8               0.0            357.98   
-    3f6796ae-89fe-3a7e-8de1-2f23ba82232e               0.0            360.00   
+                                                        (Wheel speed, mean)  \
+    path                                                                      
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            13.394722   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            14.962244   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            15.089200   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            13.077089   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            16.138867   
+    ...                                                                 ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...             0.066200   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...             0.055000   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...             0.008853   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...             0.008089   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...             0.000756   
 
-                                          (blade 1 angle, mean)  \
-    file_name                                                     
-    666a6cf9-924c-3de9-9ef5-2fbef5ca41b0               0.279252   
-    ac9e5e3c-7be8-32e1-a8ed-18b514deb246               0.218947   
-    e5ec578b-c5a5-3088-98f4-41264ce17859               0.381409   
-    5785bd44-21f4-3585-9b29-ba309115bd2c               0.367378   
-    2fe6f0a0-4757-3ae4-b4a0-103493d789cf              85.599068   
-    ...                                                     ...   
-    6ce64374-827a-30dd-b5b7-007a1f350ac3               0.246082   
-    8bdb9313-a6c3-3cf7-9bbd-950f361bcb74               0.244152   
-    7f690922-03a0-3eda-9bde-4314c51e04d5               0.219013   
-    3d298e6b-3222-3370-a415-3c62e7112ab8               0.243532   
-    3f6796ae-89fe-3a7e-8de1-2f23ba82232e               2.893502   
+                                                        (Wheel speed, var)  \
+    path                                                                     
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            0.498932   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            0.079155   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            0.287379   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            0.221067   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            0.037577   
+    ...                                                                ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            0.009512   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            0.004598   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            0.006387   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            0.004167   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            0.002392   
 
-                                          (blade 1 angle, var)  ...  \
-    file_name                                                   ...   
-    666a6cf9-924c-3de9-9ef5-2fbef5ca41b0              0.000007  ...   
-    ac9e5e3c-7be8-32e1-a8ed-18b514deb246              0.000231  ...   
-    e5ec578b-c5a5-3088-98f4-41264ce17859              0.001831  ...   
-    5785bd44-21f4-3585-9b29-ba309115bd2c              0.000019  ...   
-    2fe6f0a0-4757-3ae4-b4a0-103493d789cf             34.399625  ...   
-    ...                                                    ...  ...   
-    6ce64374-827a-30dd-b5b7-007a1f350ac3              0.000024  ...   
-    8bdb9313-a6c3-3cf7-9bbd-950f361bcb74              0.000159  ...   
-    7f690922-03a0-3eda-9bde-4314c51e04d5              0.000217  ...   
-    3d298e6b-3222-3370-a415-3c62e7112ab8              0.000161  ...   
-    3f6796ae-89fe-3a7e-8de1-2f23ba82232e            138.610708  ...   
+                                                        (Wheel speed, min)  \
+    path                                                                     
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                0.00   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...               14.32   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...               13.41   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...               11.87   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...               15.73   
+    ...                                                                ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...               -0.19   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...               -0.14   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...               -0.25   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...               -0.15   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...               -0.17   
 
-                                          (Drive 1 output torque, max)  \
-    file_name                                                            
-    666a6cf9-924c-3de9-9ef5-2fbef5ca41b0                           0.0   
-    ac9e5e3c-7be8-32e1-a8ed-18b514deb246                           0.0   
-    e5ec578b-c5a5-3088-98f4-41264ce17859                           0.0   
-    5785bd44-21f4-3585-9b29-ba309115bd2c                           0.0   
-    2fe6f0a0-4757-3ae4-b4a0-103493d789cf                           0.0   
-    ...                                                            ...   
-    6ce64374-827a-30dd-b5b7-007a1f350ac3                           0.0   
-    8bdb9313-a6c3-3cf7-9bbd-950f361bcb74                           0.0   
-    7f690922-03a0-3eda-9bde-4314c51e04d5                           0.0   
-    3d298e6b-3222-3370-a415-3c62e7112ab8                           0.0   
-    3f6796ae-89fe-3a7e-8de1-2f23ba82232e                           0.0   
+                                                        (Wheel speed, max)  \
+    path                                                                     
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...               14.14   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...               15.51   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...               15.86   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...               14.15   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...               16.59   
+    ...                                                                ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                0.31   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                0.22   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                0.22   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                0.19   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                0.14   
 
-                                          (Drive 2 output torque, mean)  \
-    file_name                                                             
-    666a6cf9-924c-3de9-9ef5-2fbef5ca41b0                            0.0   
-    ac9e5e3c-7be8-32e1-a8ed-18b514deb246                            0.0   
-    e5ec578b-c5a5-3088-98f4-41264ce17859                            0.0   
-    5785bd44-21f4-3585-9b29-ba309115bd2c                            0.0   
-    2fe6f0a0-4757-3ae4-b4a0-103493d789cf                            0.0   
-    ...                                                             ...   
-    6ce64374-827a-30dd-b5b7-007a1f350ac3                            0.0   
-    8bdb9313-a6c3-3cf7-9bbd-950f361bcb74                            0.0   
-    7f690922-03a0-3eda-9bde-4314c51e04d5                            0.0   
-    3d298e6b-3222-3370-a415-3c62e7112ab8                            0.0   
-    3f6796ae-89fe-3a7e-8de1-2f23ba82232e                            0.0   
+                                                        (hub angle, mean)  \
+    path                                                                    
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...         172.347439   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...         174.595556   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...         176.764444   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...         170.177778   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...         179.893333   
+    ...                                                               ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...         161.388044   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...         191.891689   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...         333.971078   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...         200.854242   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...         215.658711   
 
-                                          (Drive 2 output torque, var)  \
-    file_name                                                            
-    666a6cf9-924c-3de9-9ef5-2fbef5ca41b0                           0.0   
-    ac9e5e3c-7be8-32e1-a8ed-18b514deb246                           0.0   
-    e5ec578b-c5a5-3088-98f4-41264ce17859                           0.0   
-    5785bd44-21f4-3585-9b29-ba309115bd2c                           0.0   
-    2fe6f0a0-4757-3ae4-b4a0-103493d789cf                           0.0   
-    ...                                                            ...   
-    6ce64374-827a-30dd-b5b7-007a1f350ac3                           0.0   
-    8bdb9313-a6c3-3cf7-9bbd-950f361bcb74                           0.0   
-    7f690922-03a0-3eda-9bde-4314c51e04d5                           0.0   
-    3d298e6b-3222-3370-a415-3c62e7112ab8                           0.0   
-    3f6796ae-89fe-3a7e-8de1-2f23ba82232e                           0.0   
+                                                        (hub angle, var)  \
+    path                                                                   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...      10709.343303   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...      10632.927374   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...      10886.184925   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...      10579.442712   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...      10386.946281   
+    ...                                                              ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...      11954.801024   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...       3728.019529   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...        430.780434   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...        404.828171   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...         46.816874   
 
-                                          (Drive 2 output torque, min)  \
-    file_name                                                            
-    666a6cf9-924c-3de9-9ef5-2fbef5ca41b0                           0.0   
-    ac9e5e3c-7be8-32e1-a8ed-18b514deb246                           0.0   
-    e5ec578b-c5a5-3088-98f4-41264ce17859                           0.0   
-    5785bd44-21f4-3585-9b29-ba309115bd2c                           0.0   
-    2fe6f0a0-4757-3ae4-b4a0-103493d789cf                           0.0   
-    ...                                                            ...   
-    6ce64374-827a-30dd-b5b7-007a1f350ac3                           0.0   
-    8bdb9313-a6c3-3cf7-9bbd-950f361bcb74                           0.0   
-    7f690922-03a0-3eda-9bde-4314c51e04d5                           0.0   
-    3d298e6b-3222-3370-a415-3c62e7112ab8                           0.0   
-    3f6796ae-89fe-3a7e-8de1-2f23ba82232e                           0.0   
+                                                        (hub angle, min)  \
+    path                                                                   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...              0.00   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...              0.00   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...              0.00   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...              0.00   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...              0.00   
+    ...                                                              ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...              0.50   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            109.87   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...              0.00   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...              0.00   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            202.25   
 
-                                          (Drive 2 output torque, max)  \
-    file_name                                                            
-    666a6cf9-924c-3de9-9ef5-2fbef5ca41b0                           0.0   
-    ac9e5e3c-7be8-32e1-a8ed-18b514deb246                           0.0   
-    e5ec578b-c5a5-3088-98f4-41264ce17859                           0.0   
-    5785bd44-21f4-3585-9b29-ba309115bd2c                           0.0   
-    2fe6f0a0-4757-3ae4-b4a0-103493d789cf                           0.0   
-    ...                                                            ...   
-    6ce64374-827a-30dd-b5b7-007a1f350ac3                           0.0   
-    8bdb9313-a6c3-3cf7-9bbd-950f361bcb74                           0.0   
-    7f690922-03a0-3eda-9bde-4314c51e04d5                           0.0   
-    3d298e6b-3222-3370-a415-3c62e7112ab8                           0.0   
-    3f6796ae-89fe-3a7e-8de1-2f23ba82232e                           0.0   
+                                                        (hub angle, max)  \
+    path                                                                   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            356.00   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            356.00   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            356.00   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            356.00   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            356.00   
+    ...                                                              ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            359.64   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            304.74   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            355.14   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            218.63   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...            228.74   
 
-                                          (Drive 3 output torque, mean)  \
-    file_name                                                             
-    666a6cf9-924c-3de9-9ef5-2fbef5ca41b0                            0.0   
-    ac9e5e3c-7be8-32e1-a8ed-18b514deb246                            0.0   
-    e5ec578b-c5a5-3088-98f4-41264ce17859                            0.0   
-    5785bd44-21f4-3585-9b29-ba309115bd2c                            0.0   
-    2fe6f0a0-4757-3ae4-b4a0-103493d789cf                            0.0   
-    ...                                                             ...   
-    6ce64374-827a-30dd-b5b7-007a1f350ac3                            0.0   
-    8bdb9313-a6c3-3cf7-9bbd-950f361bcb74                            0.0   
-    7f690922-03a0-3eda-9bde-4314c51e04d5                            0.0   
-    3d298e6b-3222-3370-a415-3c62e7112ab8                            0.0   
-    3f6796ae-89fe-3a7e-8de1-2f23ba82232e                            0.0   
+                                                        (blade 1 angle, mean)  \
+    path                                                                        
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...               0.259421   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...               0.260000   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...               0.260000   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...               0.260000   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...               0.261156   
+    ...                                                                   ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...              92.240000   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...              92.240000   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...              92.028440   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...              91.594965   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...              92.240000   
 
-                                          (Drive 3 output torque, var)  \
-    file_name                                                            
-    666a6cf9-924c-3de9-9ef5-2fbef5ca41b0                           0.0   
-    ac9e5e3c-7be8-32e1-a8ed-18b514deb246                           0.0   
-    e5ec578b-c5a5-3088-98f4-41264ce17859                           0.0   
-    5785bd44-21f4-3585-9b29-ba309115bd2c                           0.0   
-    2fe6f0a0-4757-3ae4-b4a0-103493d789cf                           0.0   
-    ...                                                            ...   
-    6ce64374-827a-30dd-b5b7-007a1f350ac3                           0.0   
-    8bdb9313-a6c3-3cf7-9bbd-950f361bcb74                           0.0   
-    7f690922-03a0-3eda-9bde-4314c51e04d5                           0.0   
-    3d298e6b-3222-3370-a415-3c62e7112ab8                           0.0   
-    3f6796ae-89fe-3a7e-8de1-2f23ba82232e                           0.0   
+                                                        (blade 1 angle, var)  ...  \
+    path                                                                      ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...              0.000151  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...              0.000000  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...              0.000000  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...              0.000000  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...              0.000574  ...   
+    ...                                                                  ...  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...              0.000000  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...              0.000000  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...             19.514261  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...             59.219997  ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...              0.000000  ...   
 
-                                          (Drive 3 output torque, min)  \
-    file_name                                                            
-    666a6cf9-924c-3de9-9ef5-2fbef5ca41b0                           0.0   
-    ac9e5e3c-7be8-32e1-a8ed-18b514deb246                           0.0   
-    e5ec578b-c5a5-3088-98f4-41264ce17859                           0.0   
-    5785bd44-21f4-3585-9b29-ba309115bd2c                           0.0   
-    2fe6f0a0-4757-3ae4-b4a0-103493d789cf                           0.0   
-    ...                                                            ...   
-    6ce64374-827a-30dd-b5b7-007a1f350ac3                           0.0   
-    8bdb9313-a6c3-3cf7-9bbd-950f361bcb74                           0.0   
-    7f690922-03a0-3eda-9bde-4314c51e04d5                           0.0   
-    3d298e6b-3222-3370-a415-3c62e7112ab8                           0.0   
-    3f6796ae-89fe-3a7e-8de1-2f23ba82232e                           0.0   
+                                                        (Drive 1 output torque, max)  \
+    path                                                                               
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    ...                                                                          ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
 
-                                          (Drive 3 output torque, max)  ret  
-    file_name                                                                
-    666a6cf9-924c-3de9-9ef5-2fbef5ca41b0                           0.0    1  
-    ac9e5e3c-7be8-32e1-a8ed-18b514deb246                           0.0    0  
-    e5ec578b-c5a5-3088-98f4-41264ce17859                           0.0    1  
-    5785bd44-21f4-3585-9b29-ba309115bd2c                           0.0    1  
-    2fe6f0a0-4757-3ae4-b4a0-103493d789cf                           0.0    1  
-    ...                                                            ...  ...  
-    6ce64374-827a-30dd-b5b7-007a1f350ac3                           0.0    1  
-    8bdb9313-a6c3-3cf7-9bbd-950f361bcb74                           0.0    1  
-    7f690922-03a0-3eda-9bde-4314c51e04d5                           0.0    0  
-    3d298e6b-3222-3370-a415-3c62e7112ab8                           0.0    1  
-    3f6796ae-89fe-3a7e-8de1-2f23ba82232e                           0.0    0  
+                                                        (Drive 2 output torque, mean)  \
+    path                                                                                
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                            0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                            0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                            0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                            0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                            0.0   
+    ...                                                                           ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                            0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                            0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                            0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                            0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                            0.0   
 
-    [1350 rows x 301 columns]
+                                                        (Drive 2 output torque, var)  \
+    path                                                                               
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    ...                                                                          ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+
+                                                        (Drive 2 output torque, min)  \
+    path                                                                               
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    ...                                                                          ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+
+                                                        (Drive 2 output torque, max)  \
+    path                                                                               
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    ...                                                                          ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+
+                                                        (Drive 3 output torque, mean)  \
+    path                                                                                
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                            0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                            0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                            0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                            0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                            0.0   
+    ...                                                                           ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                            0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                            0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                            0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                            0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                            0.0   
+
+                                                        (Drive 3 output torque, var)  \
+    path                                                                               
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    ...                                                                          ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+
+                                                        (Drive 3 output torque, min)  \
+    path                                                                               
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    ...                                                                          ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+
+                                                        (Drive 3 output torque, max)  \
+    path                                                                               
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    ...                                                                          ...   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...                           0.0   
+
+                                                        ret  
+    path                                                     
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...    0  
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...    0  
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...    0  
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...    0  
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...    0  
+    ...                                                 ...  
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...    1  
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...    1  
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...    1  
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...    1  
+    /gpfs/smartdata/iu5681/src/Parallel_computing/d...    1  
+
+    [48339 rows x 301 columns]
 
 </div>
 
@@ -1097,11 +6055,15 @@ und Trainings- und Testdaten.
 
 </div>
 
-<div class="cell code" execution_count="64">
+<div class="cell code" execution_count="48">
 
-    from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split( 
-        train.drop('ret', axis=1), train["ret"], test_size=0.33, random_state=42)
+``` python
+import sklearn as sk
+import sklearn.model_selection 
+
+X_train, X_test, y_train, y_test = sk.model_selection.train_test_split( 
+    train.drop('ret', axis=1), train["ret"], test_size=0.33, random_state=42)
+```
 
 </div>
 
@@ -1111,11 +6073,15 @@ Nun können wir den Klassifikator lernen.
 
 </div>
 
-<div class="cell code" execution_count="65">
+<div class="cell code" execution_count="49">
 
-    classifier = sk.ensemble.RandomForestClassifier()
+``` python
+import sklearn.ensemble 
 
-<div class="output execute_result" execution_count="65">
+classifier = sk.ensemble.RandomForestClassifier()
+```
+
+<div class="output execute_result" execution_count="49">
 
     RandomForestClassifier()
 
@@ -1134,11 +6100,13 @@ lesen.
 
 </div>
 
-<div class="cell code" execution_count="66">
+<div class="cell code" execution_count="50">
 
-    classifier.fit(X_train, y_train)
+``` python
+classifier.fit(X_train, y_train)
+```
 
-<div class="output execute_result" execution_count="66">
+<div class="output execute_result" execution_count="50">
 
     RandomForestClassifier()
 
@@ -1152,20 +6120,22 @@ Die Ergebnisse sind übrigens gar nicht mal so schlecht
 
 </div>
 
-<div class="cell code" execution_count="70">
+<div class="cell code" execution_count="51">
 
-    print(sk.metrics.classification_report(y_test,classifier.predict(X_test)))
+``` python
+print(sk.metrics.classification_report(y_test,classifier.predict(X_test)))
+```
 
 <div class="output stream stdout">
 
                   precision    recall  f1-score   support
 
-               0       0.97      0.93      0.95       223
-               1       0.94      0.97      0.95       223
+               0       0.98      0.97      0.97      8143
+               1       0.97      0.98      0.97      7809
 
-        accuracy                           0.95       446
-       macro avg       0.95      0.95      0.95       446
-    weighted avg       0.95      0.95      0.95       446
+        accuracy                           0.97     15952
+       macro avg       0.97      0.97      0.97     15952
+    weighted avg       0.97      0.97      0.97     15952
 
 </div>
 
@@ -1179,19 +6149,22 @@ anschauen.
 
 </div>
 
-<div class="cell code" execution_count="71">
+<div class="cell code" execution_count="52">
 
-    classifier = sk.tree.DecisionTreeClassifier(max_depth=6)  # limit depth of tree
+``` python
+from dtreeviz.trees import *
+classifier = sk.tree.DecisionTreeClassifier(max_depth=6)  # limit depth of tree
 
-    classifier.fit(X_train, y_train)
+classifier.fit(X_train, y_train)
 
-    dtreeviz(classifier, 
-                   X_train, 
-                   y_train,
-                   target_name='ret',
-                   feature_names=X_train.columns, 
-                   class_names=["1.0", "0.0"]  # need class_names for classifier
-                  )  
+dtreeviz(classifier, 
+               X_train, 
+               y_train,
+               target_name='ret',
+               feature_names=X_train.columns, 
+               class_names=["1.0", "0.0"]  # need class_names for classifier
+              )  
+```
 
 <div class="output stream stderr">
 
@@ -1201,9 +6174,11 @@ anschauen.
 
 </div>
 
-<div class="output execute_result" execution_count="71">
+<div class="output execute_result" execution_count="52">
 
-![](dee10670a4f5247a2f236d5473c404885ac5cbde.svg)
+![](images/b864c625bec772d99359979ba76a29a0f2758a18.svg)
+
+    <dtreeviz.trees.DTreeViz at 0x2ad06be25390>
 
 </div>
 
@@ -1216,9 +6191,45 @@ wieder nutzen können :).
 
 </div>
 
-<div class="cell code" execution_count="72">
+<div class="cell code" execution_count="53">
 
-    cluster.scale(0)
+``` python
+cluster.scale(0)
+```
+
+</div>
+
+<div class="cell code" execution_count="54">
+
+``` python
+client.restart()
+```
+
+<div class="output execute_result" execution_count="54">
+
+<table style="border: 2px solid white;">
+<tr>
+<td style="vertical-align: top; border: 0px solid white">
+<h3 style="text-align: left;">Client</h3>
+<ul style="text-align: left; list-style: none; margin: 0; padding: 0;">
+  <li><b>Scheduler: </b>tcp://141.52.224.192:36959</li>
+  <li><b>Dashboard: </b><a href='http://141.52.224.192:35111/status' target='_blank'>http://141.52.224.192:35111/status</a></li>
+</ul>
+</td>
+<td style="vertical-align: top; border: 0px solid white">
+<h3 style="text-align: left;">Cluster</h3>
+<ul style="text-align: left; list-style:none; margin: 0; padding: 0;">
+  <li><b>Workers: </b>0</li>
+  <li><b>Cores: </b>0</li>
+  <li><b>Memory: </b>0 B</li>
+</ul>
+</td>
+</tr>
+</table>
+
+    <Client: 'tcp://141.52.224.192:36959' processes=0 threads=0, memory=0 B>
+
+</div>
 
 </div>
 
