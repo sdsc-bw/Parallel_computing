@@ -60,17 +60,19 @@ TRAIN_PATH = "data/train/"
 </div>
 
 <div class="cell code" execution_count="59">
+</div>
 
-``` python
-from IPython.display import Image
-Image('images/data.PNG')
-```
+<div class="cell markdown" execution_count="59">
 
-<div class="output execute_result" execution_count="59">
+<figure>
+    <img src = 'images/data.PNG'>
+</figure>
 
-![](images/beda407a38eb9a47e0364a467fd97dcedc6f8cd4.png)
+Fig1. wind turbine [1]
 
-    <IPython.core.display.Image object>
+References: 
+
+1. [Diagram of a wind turbine](https://upload.wikimedia.org/wikipedia/commons/2/23/Schema_Windenergieanlage.png) drawn by RobbyBer 13 January 2005
 
 </div>
 
