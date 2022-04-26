@@ -65,7 +65,7 @@ TRAIN_PATH = "data/train/"
 <div class="cell markdown" execution_count="59">
 
 <figure>
-    <img src = 'images/data.PNG'>
+    <img src = 'https://github.com/sdsc-bw/Parallel_computing/raw/master/images/data.PNG'>
 </figure>
 
 Fig1. wind turbine [1]
